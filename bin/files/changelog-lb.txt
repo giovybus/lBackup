@@ -1,0 +1,4 @@
+1.0.0-beta 
+-creazione interfaccia GUI
+-strutturizzazione delle query per la gestione del backup
+-creazione e modellazione del database

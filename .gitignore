@@ -1,0 +1,4 @@
+*.class
+.settins
+.classpath
+.project
