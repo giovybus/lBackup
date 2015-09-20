@@ -40,5 +40,17 @@ public class DBMS {
 		
 	}
 	
-
+	/**
+	 * check the connection
+	 */
+	protected void checkConnessione() {
+		try{
+			if(conn.isClosed()){
+				createConn();
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+	}
 }

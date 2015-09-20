@@ -47,5 +47,14 @@ public class AbsolutePath {
 		this.type = type;
 	}
 	
+	/**
+	 * @return
+	 * return a clear path for database
+	 */
+	public String getPathClear() {
+		if(this.path == null)return "";
+		else return this.path.replace("\\", "\\\\");
+	}
+	
 	
 }
