@@ -17,6 +17,7 @@ import boundary.BackupGui;
  * <b>Email:</b> giovanni.buscarino[at]gmail.com<br>
  *
  * created on 04/apr/2015 22.19 (sabato di pasqua)
+ * @deprecated
  */
 public class Query {
 	
@@ -59,7 +60,7 @@ public class Query {
 					+ "id_percorso_assoluto int,"
 					+ "percorso_relativo varchar(500),"
 					+ "md5 varchar(32),"
-					+"foreign key (id_percorso_assoluto) references percorsi_assoluti(id) on delete cascade,"
+					+ "foreign key (id_percorso_assoluto) references percorsi_assoluti(id) on delete cascade,"
 					+ "unique(percorso_relativo, id_percorso_assoluto)"
 					+ ")";
 	
@@ -316,6 +317,7 @@ public class Query {
 				+ idFile + ","
 				+  idPercorsoAssoluto
 				+ ")";
+		
 		String queryMysql = "INSERT INTO VIRTUAL_LINK  (ID_FILES, ID_PERCORSO_ASSOLUTO ) VALUES ("
 				+ idFile + ","
 				+  idPercorsoAssoluto

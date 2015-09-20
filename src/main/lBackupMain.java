@@ -38,7 +38,7 @@ public class lBackupMain {
 	/**
 	 * indica la versione del programma
 	 */
-	public static final String version = "1.0.0-beta1";
+	public static final String version = "1.2.0-alpha";
 	
 	/**
 	 * se è true questa variabile
@@ -65,7 +65,8 @@ public class lBackupMain {
 		/*System.out.println("parametri: -start parte il programma direttamente a fare il backup senza chiedere conferme\n"
 				+ "-server:h2 imposta il server h2 e usa le query ad-hoc\n"
 				+ "-server:mysql imposta il server mysql e usa le query ad-hoc");*/
-		if(args != null){
+		
+		/*if(args != null){
 			for(String s : args){
 				switch (s) {
 				case "-start":
@@ -104,7 +105,7 @@ public class lBackupMain {
 			new BackupGui();
 		}else{
 			JOptionPane.showMessageDialog(null, "non posso aprire il programma perchè non riesco a comunicare con il database");
-		}
+		}*/
 		
 	}
 

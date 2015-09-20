@@ -1,5 +1,5 @@
-1.0.0-beta1
--
+1.2.0-alpha
+-modifica strutturale database
 
 1.0.0-beta 
 -al click del bottone resetto la barra

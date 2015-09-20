@@ -18,6 +18,7 @@ import entity.Query;
  * <b>Email:</b> giovanni.buscarino[at]gmail.com<br>
  *
  * created on 07/apr/2015 22:09:25
+ * @deprecated
  */
 public class BackupCtr {
 
