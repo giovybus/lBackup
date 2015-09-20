@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.List;
 
@@ -47,6 +49,7 @@ public class BackupGui {
 	
 	private JPanel panCenter;
 	private static JTextArea areaLog;
+	private static String msgWelcome;
 	private JScrollPane scrollAreaLog;
 		
 	private JPanel panSouth;
@@ -57,12 +60,17 @@ public class BackupGui {
 	
 	private Config config;
 	
+	private static final String vl[] = {"\\", "|", "/", "-"};
+	
 	/**
 	 * constructor
 	 */
 	public BackupGui() {
 		ctr = new BackupCtr();
 		config = new Config();
+		
+		msgWelcome = "Welcome to lBackup " + lBackupMain.version 
+		+ "\nlatest backup is: " + config.getDataBackup() + "\ncredits:\n\tGiovanni Buscarino\n\tMarco Alaimo\n";
 		
 		initPanCenter();
 		initPanNorth();
@@ -86,9 +94,9 @@ public class BackupGui {
 	 * inizializza la textarea
 	 */
 	private void initAreaLog() {
-		areaLog = new JTextArea("Wlecome to lBackup " + lBackupMain.version 
-				+ "\nlatest backup is: " + config.getDataBackup() + "\ncredits:\n\tGiovanni Buscarino\n\tMarco Alaimo\n---\n");
+		areaLog = new JTextArea(msgWelcome);
 			
+		loadingHold();
 		//areaLog.setPreferredSize(new Dimension(800, 100));
 		areaLog.setEditable(false);
 		/*areaLog.setLineWrap(true);
@@ -302,6 +310,8 @@ public class BackupGui {
 					}
 				};
 				
+				bar.setValue(0);
+				buttStart.setEnabled(false);
 				t.start();
 			}
 		});
@@ -312,7 +322,7 @@ public class BackupGui {
 	 * i pannelli
 	 */
 	private void initFrame() {
-		frm = new JFrame("lBackup");
+		frm = new JFrame("lBackup (" + lBackupMain.version + ")" );
 		frm.setSize(700, 400);
 		frm.setIconImage(lBackupMain.getLogo());
 		frm.setLocationRelativeTo(null);
@@ -325,6 +335,33 @@ public class BackupGui {
 		frm.add(panSouth, BorderLayout.SOUTH);
 		
 		frm.setVisible(true);
+		
+		frm.addWindowListener(new WindowListener() {
+			
+			@Override
+			public void windowOpened(WindowEvent arg0) {}
+			
+			@Override
+			public void windowIconified(WindowEvent arg0) {}
+			
+			@Override
+			public void windowDeiconified(WindowEvent arg0) {}
+			
+			@Override
+			public void windowDeactivated(WindowEvent arg0) {}
+			
+			@Override
+			public void windowClosing(WindowEvent arg0) {
+				ctr.chiudiConnessione();
+				
+			}
+			
+			@Override
+			public void windowClosed(WindowEvent arg0) {}
+			
+			@Override
+			public void windowActivated(WindowEvent arg0) {}
+		});
 		
 	}
 	
@@ -347,6 +384,30 @@ public class BackupGui {
 	public static void setMinMaxBar(int min, int max){
 		bar.setMinimum(min);
 		bar.setMaximum(max);
+	}
+
+	/**
+	 * create a vintage bar loading!
+	 */
+	public static void loadingHold() {
+		/*try{
+			JOptionPane.showMessageDialog(null, areaLog.getText(areaLog.getText().length()-1, 1));
+			String cha = areaLog.getText(areaLog.getText().length()-2, 1);
+			
+			for(int i=0; i<vl.length; i++){
+				if(cha == vl[i] && i+1 < vl.length){
+					
+				}else if(i+1 >= vl.length){
+					
+				}else{
+					
+				}
+			}
+			
+		}catch(Exception exc){
+			exc.printStackTrace();
+		}*/
+		
 	}
 
 }

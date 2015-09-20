@@ -1,7 +1,7 @@
-package control;
+ package control;
 
 import java.io.File;
-import java.text.NumberFormat;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,14 +41,39 @@ public class BackupCtr {
 	 */
 	private File destinazione;
 	
-	private NumberFormat nf;
+	private DecimalFormat decimalFormat;
 	
 	private Query query;
+	
+	/**
+	 * mi indica i file nuovi
+	 * trovati, mi serve per capire se calcolare
+	 * la differenza tra la cartella sorgente
+	 * e quella di destinazione
+	 * 	
+	 */
+	private int fileNuoviTrovati;
+	
+	/**
+	 * mi indica i file diversi 
+	 * trovati, cioè quelli che sono
+	 * cambiati tra l'ultimo backup
+	 * e questo che sto per effettuare
+	 */
+	private int fileDiversiTrovati;
+	
+	/**
+	 * mi indica il numer di file
+	 * che non sono cambiati dall'
+	 * ultimo backup
+	 */
+	private int fileNonModificatiTrovati;
 	
 	/**
 	 * 
 	 */
 	public BackupCtr() {
+		decimalFormat = new DecimalFormat("###.##");
 		query = new Query();
 	}
 
@@ -119,7 +144,7 @@ public class BackupCtr {
 		path.add(sorgente.getAbsolutePath());
 		int idSorgente = query.getIdPercorsoAssoluto(sorgente.getAbsolutePath()+"\\");
 		
-		BackupGui.addStringAreaLog("espoloro tutte le cartelle ...");
+		BackupGui.addStringAreaLog("espoloro tutte le cartelle ... (il processo potrebbe durare qualche minuto)");
 		navigaDirectory(path, "", sorgente.list().length, idSorgente);
 		
 		
@@ -135,13 +160,13 @@ public class BackupCtr {
 			//int id = query.inserisciPercorsoAssoluto(destinazione.getAbsolutePath()+"\\", Query.DIR_SUBDESTINAZIONE);
 			System.out.println("file nuovi trovati:");
 			BackupGui.addStringAreaLog("elenco file nuovi trovati:");
-			query.scovaFileNuovi(sorgente, idSorgente, destinazione, Integer.parseInt(ultimoBk[1]));
+			fileNuoviTrovati = query.scovaFileNuovi(sorgente, idSorgente, destinazione, Integer.parseInt(ultimoBk[1]));
 			System.out.println("----");
 			BackupGui.addStringAreaLog("---");
 			
 			System.out.println("file diversi trovati:");
 			BackupGui.addStringAreaLog("elenco file esistenti ma che sono cambiati rispetto all'ultimo backup:");
-			query.scovaFileDiversi(sorgente, idSorgente, destinazione, Integer.parseInt(ultimoBk[1]));
+			fileDiversiTrovati = query.scovaFileDiversi(sorgente, idSorgente, destinazione, Integer.parseInt(ultimoBk[1]));
 			System.out.println("-----");
 			BackupGui.addStringAreaLog("---");
 				
@@ -164,16 +189,21 @@ public class BackupCtr {
 		int choose = JOptionPane.showConfirmDialog(null, "vuoi effettuare il backup di questi dati?", "", JOptionPane.INFORMATION_MESSAGE);
 		if(choose == JOptionPane.YES_OPTION){
 			int idPathAssoluto = query.inserisciPercorsoAssoluto(destinazione.getAbsolutePath() + "\\", Query.DIR_SUBDESTINAZIONE);
-			query.effettuaBackup(idPathAssoluto, destinazione.toURI());
 			
 			if(ultimoBackup != null){
 				BackupGui.addStringAreaLog("file che non sono cambiati rispetto all'ultimo backup:");
 				System.out.println("file che non sono cambiati:");
-				query.scovaFileNonCambiati(sorgente, idSorgente, destinazione, Integer.parseInt(ultimoBk[1]), idPathAssoluto);
+				fileNonModificatiTrovati = query.scovaFileNonCambiati(sorgente, idSorgente, destinazione, Integer.parseInt(ultimoBk[1]), idPathAssoluto);
 				System.out.println("-----");
 			}
 			
+			query.effettuaBackup(idPathAssoluto, destinazione.toURI());
+			
 			BackupGui.addStringAreaLog("Backup completato");
+			BackupGui.addStringAreaLog("Responso:");
+			BackupGui.addStringAreaLog("\t-File nuovi aggiunti: " + fileNuoviTrovati);
+			BackupGui.addStringAreaLog("\t-File modificati dall'ultimo backup: " + fileDiversiTrovati);
+			BackupGui.addStringAreaLog("\t-File non modificati dall'ultimo backup: " + fileNonModificatiTrovati);
 			stampaDimensioni();
 		
 			
@@ -188,6 +218,7 @@ public class BackupCtr {
 				FileUtils.deleteDirectory(destinazione);
 				System.out.println("directory cancellata correttamente");
 				BackupGui.addStringAreaLog("cancello la directory che avevo creato per il backup: " + destinazione.getAbsolutePath());
+				query.cancellaTuttiFileDaBackuppare();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -206,15 +237,60 @@ public class BackupCtr {
 		
 		String dimSorgenteStr = "";
 		if(dimSorgenteMB > 0 && dimSorgenteGB > 0){
-			dimSorgenteStr = "Dimensione totale cartella sorgente: " + dimSorgenteGB + " GB, " + dimSorgenteMB + " MB, " + dimSorgente + " B";
+			dimSorgenteStr = "Dimensione totale cartella sorgente: " 
+					+ decimalFormat.format(dimSorgenteGB) + " GB, " 
+					+ decimalFormat.format(dimSorgenteMB) + " MB, " 
+					+ decimalFormat.format(dimSorgente) + " B";
 		}else if(dimSorgenteMB > 0){
-			dimSorgenteStr = "Dimensione totale cartella sorgente: " + dimSorgenteMB + " MB, " + dimSorgente + " B";
+			dimSorgenteStr = "Dimensione totale cartella sorgente: " 
+					+ decimalFormat.format(dimSorgenteMB) + " MB, " 
+					+ decimalFormat.format(dimSorgente) + " B";
 		}else{
-			dimSorgenteStr = "Dimensione totale cartella sorgente: " + dimSorgente + " B";
+			dimSorgenteStr = "Dimensione totale cartella sorgente: " 
+					+ decimalFormat.format(dimSorgente) + " B";
+		}
+		
+		long dimBackupEff = query.getDimensioneCartellaBackup();
+		double dimBackupMB = dimBackupEff/(1024*1024);
+		double dimBackupGB = dimBackupMB/1024;
+		
+		String dimBackupStr = "";
+		if(dimBackupMB > 0 && dimBackupGB > 0){
+			dimBackupStr = "Dimensione totale cartella backup appena copiata: " 
+					+ decimalFormat.format(dimBackupGB) + " GB, " 
+					+ decimalFormat.format(dimBackupMB) + " MB, " 
+					+ decimalFormat.format(dimBackupEff) + " B";
+		}else if(dimBackupMB > 0){
+			dimBackupStr = "Dimensione totale cartella backup appena copiata: " 
+					+ decimalFormat.format(dimBackupMB) + " MB, " 
+					+ decimalFormat.format(dimBackupEff) + " B";
+		}else{
+			dimBackupStr = "Dimensione totale cartella backup appena copiata: " 
+					+ decimalFormat.format(dimBackupEff) + " B";
 		}
 		
 		BackupGui.addStringAreaLog(dimSorgenteStr);
+		BackupGui.addStringAreaLog(dimBackupStr);
 		
+		if(fileNuoviTrovati == 0 && dimSorgente > dimBackupEff){
+			String dimDiffStr = "";
+			long dimDiff = (dimSorgente - dimBackupEff);
+			double dimDiffMB = dimDiff/(1024*1024);
+			double dimDiffGB = dimDiffMB/1024;
+			
+		
+			if(dimDiff > 0 && dimDiffGB > 0 && dimDiffMB > 0){
+				dimDiffStr = "Hai risparmiato: " + dimDiffGB + " GB, " + dimDiffMB + " MB, " + dimDiff + " B";
+			}else if(dimDiffMB > 0){
+				dimDiffStr = "Hai risparmiato: " + dimDiffMB + " MB, " + dimDiff + " B";
+			}else if(dimDiff > 0){
+				dimDiffStr = "Hai risparmiato: " + dimDiff + " B";
+			}else{
+				//nothing
+			}
+			
+			BackupGui.addStringAreaLog(dimDiffStr);
+		}
 	}
 
 	/**
@@ -238,6 +314,7 @@ public class BackupCtr {
 	 */
 	private void navigaDirectory(List <String> path, String estensione, int numDir, int idPercorsoAssoluto){
 		//for(int i=0; i<path.size(); i++)System.out.println(path.get(i));
+		
 		List <String> temp = new ArrayList<String>();
 		int contaDirectory = 0;
 		String est = estensione;
@@ -258,6 +335,7 @@ public class BackupCtr {
 						new File(destinazione.getAbsoluteFile() + "\\" + rel).mkdir();
 						
 					}else if(controllaEstensione(list[j], estensione)){
+						BackupGui.loadingHold();
 //						System.out.println("Dimensione del file: " + list[j].length());		
 						String rel = sorgente.toURI().relativize(list[j].toURI()).getPath();
 						//System.out.println(rel + " ultima mod:" + list[j].lastModified() + " dim:" + list[j].length() + "B"); 
@@ -291,6 +369,10 @@ public class BackupCtr {
 		}
 		//System.out.println(controllo + " " + estensione + " " + file.getAbsolutePath());
 		return controllo;*/
+	}
+	
+	public void chiudiConnessione(){
+		query.chiudiConnessione();
 	}
 
 }
