@@ -1,5 +1,7 @@
 package entity;
 
+import java.io.File;
+
 /**
  * @author Giovanni Buscarino (giovybus) Copyright (c) 2015 <br>
  * <b>Email:</b> giovanni.buscarino[at]gmail.com<br>
@@ -60,4 +62,11 @@ public class Files {
 		this.md5 = md5;
 	}
 	
+	/**
+	 * mi da il file reale
+	 * @return
+	 */
+	public File getFile(){
+		return new File(absolutePath.getPath() + "\\" + relativePath);
+	}
 }
