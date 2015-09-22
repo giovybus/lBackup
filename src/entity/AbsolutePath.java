@@ -7,9 +7,47 @@ package entity;
  * created on 20/set/2015 21:24:31
  */
 public class AbsolutePath {
+	public static final int SOURCE = 0;
+	public static final int ROOT_DESTINATION = 1;
+	public static final int CHILD_DESTINATION = 2;
+	
+	/**
+	 * the AI id
+	 */
 	private int id;
+	
+	/**
+	 * the relative path from X:\ ./
+	 * to root directory source
+	 */
 	private String path;
+	
+	/**
+	 * type of dir
+	 * root backup
+	 * source
+	 * child backup
+	 */
 	private int type;
+	
+	/**
+	 * void constructor
+	 */
+	public AbsolutePath() {
+		
+	}
+	
+	/**
+	 * constructor param
+	 * @param id
+	 * @param path
+	 * @param type
+	 */
+	public AbsolutePath(int id, String path, int type) {
+		this.id = id;
+		this.path = path;
+		this.type = type;
+	}
 	/**
 	 * @return the id
 	 */

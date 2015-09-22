@@ -33,7 +33,15 @@ public class Config {
 	}
 	
 	public String getSourcePath(){
-		return prop.getProperty(K_PATH_SOURCE);
+		String str = prop.getProperty(K_PATH_SOURCE);
+		if(str == null){
+			prop.setProperty(K_PATH_SOURCE, "");
+			scriviFileINI("add path source");
+			return "";
+			
+		}else{
+			return str;
+		}
 	}
 	
 	public void setSourcePath(String src){
@@ -42,7 +50,15 @@ public class Config {
 	}
 	
 	public String getDestinationPath(){
-		return prop.getProperty(K_PATH_DESTINATION);
+		String str = prop.getProperty(K_PATH_DESTINATION);
+		if(str == null){
+			prop.setProperty(K_PATH_DESTINATION, "");
+			scriviFileINI("add path destination");
+			return "";
+			
+		}else{
+			return str;
+		}
 	}
 	
 	public void setDestinazionePath(String des){
@@ -51,7 +67,14 @@ public class Config {
 	}
 	
 	public String getDataBackup(){
-		return prop.getProperty(K_DATA_BACKUP);
+		String str = prop.getProperty(K_DATA_BACKUP);
+		if(str == null){
+			prop.setProperty(K_DATA_BACKUP, "");
+			scriviFileINI("add data backup");
+			return "";
+		}else{
+			return str;
+		}
 	}
 	
 	public void setDataAttualeBackup(){

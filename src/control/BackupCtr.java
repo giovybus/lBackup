@@ -143,6 +143,7 @@ public class BackupCtr {
 		
 		List<String>path = new ArrayList<>();
 		path.add(sorgente.getAbsolutePath());
+
 		int idSorgente = query.getIdPercorsoAssoluto(sorgente.getAbsolutePath()+"\\");
 		
 		BackupGui.addStringAreaLog("espoloro tutte le cartelle ... (il processo potrebbe durare qualche minuto)");

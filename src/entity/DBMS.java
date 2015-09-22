@@ -15,6 +15,9 @@ import main.lBackupMain;
  */
 public class DBMS {
 	private static final String urlH2 = "jdbc:h2:" + lBackupMain.PATH_HOME_DIR + "db1;auto_server=true";
+	
+	@SuppressWarnings("unused")
+	private static final String urlMySql = "jdbc:mysql://127.0.0.1:3306/db1";
 	private static final String user = "root";
 	private static final String psw = "";
 	protected Connection conn;

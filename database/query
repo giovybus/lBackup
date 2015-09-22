@@ -1,0 +1,70 @@
+crea tabelle per H2:
+
+CREATE TABLE IF NOT EXISTS `absolute_path` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `path` VARCHAR(500) NOT NULL ,
+  `type` INT NULL ,
+  PRIMARY KEY (`id`))
+
+CREATE TABLE IF NOT EXISTS `files_source` (
+  `id` INT NOT NULL AUTO_INCREMENT ,
+  `id_absolute_path` INT NOT NULL,
+  `relative_path` VARCHAR(500) NOT NULL,
+  `md5` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_absolute_path_idx` (`id_absolute_path` ASC),
+  CONSTRAINT `fk_absolute_path_s`
+    FOREIGN KEY (`id_absolute_path`)
+    REFERENCES `absolute_path` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+
+CREATE TABLE IF NOT EXISTS `files_backup` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `id_absolute_path` INT NOT NULL ,
+  `relative_path` VARCHAR(500) NOT NULL,
+  `md5` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_absolute_path_idx` (`id_absolute_path` ASC),
+  CONSTRAINT `fk_absolute_path_b`
+    FOREIGN KEY (`id_absolute_path`)
+    REFERENCES `absolute_path` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+
+CREATE TABLE IF NOT EXISTS `virtual_link` (
+  `id_real_file` INT NULL ,
+  `id_absolute_path_backup` INT NULL ,
+  INDEX `id_file_idx` (`id_real_file` ASC),
+  INDEX `id_absolute_path_idx` (`id_absolute_path_backup` ASC),
+  CONSTRAINT `id_file`
+    FOREIGN KEY (`id_real_file`)
+    REFERENCES `files_backup` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `id_absolute_path`
+    FOREIGN KEY (`id_absolute_path_backup`)
+    REFERENCES `absolute_path` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+
+CREATE TABLE IF NOT EXISTS `file_to_backup` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `absolute_path_source` VARCHAR(500) NULL ,
+  `absolute_path_destination` VARCHAR(500) NULL ,
+  `status` INT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)  
+  )
+
+
+scova file nuovi:
+	(select relative_path from files_source where last=0) minus (select relative_path from files_source where last=1)
+
+scova file diversi:
+	SELECT * FROM files_source n join files_source l ON n.relative_path = l.relative_path AND n.last=0 AND l.last=1 AND n.md5 != l.md5
+	
+	select relative_path from actual where md5 in ((select md5 from files_source where last=0) minus (select md5 from files_source where last=1)) AND relative_path not in ((select relative_path from files_source where last=0) minus (select relative_path from files_source where last=1))
+
+
+scova file uguali:
+	SELECT * FROM files_source n join files_source l ON n.relative_path = l.relative_path AND n.last=0 AND l.last=1 AND n.md5 = l.md5

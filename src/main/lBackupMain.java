@@ -1,15 +1,26 @@
 package main;
 
+import java.awt.Color;
 import java.awt.Image;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
+import sun.applet.Main;
+import entity.AbsolutePath;
+import entity.Copy;
+import entity.DBMS;
+import entity.DBMS_AbsolutePath;
+import entity.DBMS_FileSource;
+import entity.FilesSource;
 import entity.Query;
 import boundary.BackupGui;
+import boundary.MainGui;
 
 /**
  * @author Giovanni Buscarino (giovybus) Copyright (c) 2015 <br>
@@ -54,6 +65,15 @@ public class lBackupMain {
 	
 	public static int PAR_SERVER = SERVER_H2;
 	
+	private static File sorgente;
+	private static File destinazione;
+	
+	private static DBMS_FileSource dbFileSource;
+	
+	public static final Color WET_ASPHALT = new Color(52, 73, 94);
+	public static final Color MIDNIGHT_BLUE = new Color(44, 62, 80);
+	public static final Color ESMERALD = new Color(46, 204, 113);
+	public static final Color CLOUDS = new Color(236, 240, 241);
 	/**
 	 * @param args
 	 * -nogui il programma parte senza l'interfaccia grafica
@@ -107,6 +127,147 @@ public class lBackupMain {
 			JOptionPane.showMessageDialog(null, "non posso aprire il programma perchè non riesco a comunicare con il database");
 		}*/
 		
+		setLookAndFeel();
+		initImageIcon();
+		new MainGui();
+		
+		/*inserisciRootSorgente();
+		inserisciRootBackup();*/
+		
+		/*dbFileSource = new DBMS_FileSource();
+		
+		List<AbsolutePath>allRootSources = getAllRootSources();
+		System.out.println("cartelle root sorgente: " + allRootSources.size());
+		for(AbsolutePath a : allRootSources){
+			System.out.println("\tid: " + a.getId() + ", path: " + a.getPath());
+		}
+		sorgente = new File(allRootSources.get(0).getPath());
+		
+		AbsolutePath rootBackup = getRootBackup();
+		System.out.println("cartella root backup: " + rootBackup.getPath());
+		
+		destinazione = new File(rootBackup.getPath() + "\\" + Long.toString(System.currentTimeMillis()));
+		System.out.println("cartella child backup: " + destinazione.getAbsolutePath());
+		
+		List<String>path = new ArrayList<>();
+		path.add(sorgente.getAbsolutePath());
+		navigaDirectory(path, "", sorgente.list().length, allRootSources.get(0));
+		
+		//controllo file con l'ultimo backup (tabella files_source last = 1)
+		
+		//prendo le decisioni in merito al risultato del controllo
+		
+		
+		/*if(dbFileSource.removeAllLastTrue()){
+			System.out.println(dbFileSource.setAllLastTrue());
+		}else{
+			System.out.println("non sono riuscito a cancellare gli elementi files_source where last=1");
+		}*/
+		
+		
+	}
+	
+	/**
+	 * src - primoPak
+	 *  |		|- prova.java
+	 * 	|		|- altroPak
+	 * 	|				|-settings.java
+	 * 	|
+	 *  |		|- secondoPak
+	 *  |				|-frame.java
+	 *  |				|-gui.java
+	 *  |
+	 *  |
+	 *  |
+	 * 	|- main.java
+	 * 
+	 * 
+	 * @param path
+	 * @param estensione
+	 * @param numDir
+	 */
+	private static void navigaDirectory(List <String> path, String estensione, int numDir, AbsolutePath absolutePath){
+		//for(int i=0; i<path.size(); i++)System.out.println(path.get(i));
+		
+		List <String> temp = new ArrayList<String>();
+		int contaDirectory = 0;
+		String est = estensione;
+		
+		if(numDir == 0) contaDirectory = -1;
+		
+		for(int i=0; i<path.size(); i++){
+			
+			File f = new File(path.get(i));
+				
+				File []list = f.listFiles();
+				
+				for(int j=0; j<list.length; j++){
+					if(list[j].isDirectory()){
+						temp.add(list[j].getAbsolutePath());
+						contaDirectory++;
+						String rel = sorgente.toURI().relativize(list[j].toURI()).getPath();
+						new File(destinazione.getAbsoluteFile() + "\\" + rel).mkdir();
+						
+					}else{
+//						System.out.println("Dimensione del file: " + list[j].length());		
+						String rel = sorgente.toURI().relativize(list[j].toURI()).getPath();
+						System.out.println("\t" + rel);
+						//System.out.println(rel + " ultima mod:" + list[j].lastModified() + " dim:" + list[j].length() + "B"); 
+						
+						//TODO inserire file nel database
+						//query.inserisciFile(idPercorsoAssoluto, rel, Copy.getMd5(list[j]));
+						FilesSource fs = new FilesSource();
+						fs.setAbsolutePath(absolutePath);
+						fs.setLast(false);
+						fs.setMd5(Copy.getMd5(list[j]));
+						fs.setRelativePath(rel);
+						
+						System.out.println(dbFileSource.insert(fs));
+					}
+				}
+		}
+		
+		if(numDir != -1) navigaDirectory(temp, est, contaDirectory, absolutePath);
+	}
+	
+	/**
+	 * @return
+	 */
+	private static AbsolutePath getRootBackup() {
+		DBMS_AbsolutePath dbAbs = new DBMS_AbsolutePath();
+		return dbAbs.getRootBackupDir();
+	}
+
+	/**
+	 * mi da tutte le cartelle memorizzate come root
+	 * di sorgente
+	 * @return
+	 */
+	private static List<AbsolutePath> getAllRootSources() {
+		DBMS_AbsolutePath dbAbs = new DBMS_AbsolutePath();
+		return dbAbs.getAllRootSources();
+	}
+
+	/**
+	 * inserisce una cartella di backup nel database
+	 */
+	private static void inserisciRootBackup(){
+		AbsolutePath abs = new AbsolutePath();
+		abs.setPath("C:\\Users\\giovybus\\Desktop\\rep");
+		abs.setType(1);
+		DBMS_AbsolutePath dbAbs = new DBMS_AbsolutePath();
+		System.out.println(dbAbs.insert(abs));
+	}
+	
+	/**
+	 * inserisce una cartella sorgente nel database
+	 */
+	private static void inserisciRootSorgente() {
+		AbsolutePath abs = new AbsolutePath();
+		abs.setPath("C:\\Users\\giovybus\\Desktop\\bc");
+		abs.setType(0);
+		DBMS_AbsolutePath dbAbs = new DBMS_AbsolutePath();
+		System.out.println(dbAbs.insert(abs));
 	}
 
 	/**

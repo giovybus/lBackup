@@ -8,4 +8,19 @@ package entity;
  */
 public class FilesSource extends Files{
 
+	private boolean last;
+
+	/**
+	 * @return the last
+	 */
+	public boolean isLast() {
+		return last;
+	}
+
+	/**
+	 * @param last the last to set
+	 */
+	public void setLast(boolean last) {
+		this.last = last;
+	}
 }

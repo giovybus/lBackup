@@ -43,6 +43,15 @@ public class Files {
 	public String getRelativePath() {
 		return relativePath;
 	}
+	
+	/**
+	 * @return
+	 */
+	public String getRelativePathClear() {
+		if(this.relativePath == null) return "";
+		else return this.relativePath.replace("\\", "\\\\");
+	}
+	
 	/**
 	 * @param relativePath the relativePath to set
 	 */
