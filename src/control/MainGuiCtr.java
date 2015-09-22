@@ -109,7 +109,7 @@ public class MainGuiCtr {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				new DetailsGui();				
+				new DetailsGui(sources, destination);				
 			}
 		});
 		

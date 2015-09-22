@@ -49,7 +49,7 @@ public class Files {
 	 */
 	public String getRelativePathClear() {
 		if(this.relativePath == null) return "";
-		else return this.relativePath.replace("\\", "\\\\");
+		else return this.relativePath.replace("\\", "\\\\").replace("'", "''");
 	}
 	
 	/**

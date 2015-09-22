@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Image;
 import java.io.File;
 import java.net.URL;
@@ -74,6 +75,9 @@ public class lBackupMain {
 	public static final Color MIDNIGHT_BLUE = new Color(44, 62, 80);
 	public static final Color ESMERALD = new Color(46, 204, 113);
 	public static final Color CLOUDS = new Color(236, 240, 241);
+	public static final Color SILVER = new Color(189, 195, 199);
+	public static final Font h1 = new Font("Roboto", Font.PLAIN, 25);
+	
 	/**
 	 * @param args
 	 * -nogui il programma parte senza l'interfaccia grafica
