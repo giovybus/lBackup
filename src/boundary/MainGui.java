@@ -124,10 +124,24 @@ public class MainGui {
 		BoxLayout box = new BoxLayout(pan, BoxLayout.LINE_AXIS);
 		pan.setLayout(box);
 		
+		JPanel rect = getPanelRectangle();
+		initLabStart();
+		rect.add(labStart);
+		
 		pan.add(buttStart);
-		pan.add(getPanelRectangle());
+		pan.add(rect);
 		
 		return pan;
+	}
+
+	/**
+	 * 
+	 */
+	private void initLabStart() {
+		labStart = new JLabel();
+		labStart.setFont(lBackupMain.h3);
+		labStart.setForeground(lBackupMain.CLOUDS);
+		
 	}
 
 	/**
@@ -139,14 +153,24 @@ public class MainGui {
 		BoxLayout box = new BoxLayout(pan, BoxLayout.LINE_AXIS);
 		pan.setLayout(box);
 		
-		pan.add(buttSfogliaDestination);
-		
 		JPanel rect = getPanelRectangle();
-		/*initLab
-		rect.add();*/
+		initLabDestinationPath();
+		rect.add(labDestinationPath);
+		
+		pan.add(buttSfogliaDestination);
 		pan.add(rect);
 		
 		return pan;
+	}
+
+	/**
+	 * init the lab destination path
+	 */
+	private void initLabDestinationPath() {
+		labDestinationPath = new JLabel();
+		labDestinationPath.setFont(lBackupMain.h3);
+		labDestinationPath.setForeground(lBackupMain.CLOUDS);
+		
 	}
 
 	/**
@@ -158,10 +182,24 @@ public class MainGui {
 		BoxLayout box = new BoxLayout(pan, BoxLayout.LINE_AXIS);
 		pan.setLayout(box);
 		
+		JPanel rect = getPanelRectangle();
+		initLabSourcePath();
+		rect.add(labSourcePath);
+		
 		pan.add(buttSfogliaSource);
-		pan.add(getPanelRectangle());
+		pan.add(rect);
 		
 		return pan;
+	}
+
+	/**
+	 * 
+	 */
+	private void initLabSourcePath() {
+		labSourcePath = new JLabel();
+		labSourcePath.setFont(lBackupMain.h3);
+		labSourcePath.setForeground(lBackupMain.CLOUDS);
+		
 	}
 
 	/**
@@ -287,5 +325,24 @@ public class MainGui {
 		return buttStart;
 	}
 	
+	/**
+	 * @return the labDestinationPath
+	 */
+	public JLabel getLabDestinationPath() {
+		return labDestinationPath;
+	}
 	
+	/**
+	 * @return the labStart
+	 */
+	public JLabel getLabStart() {
+		return labStart;
+	}
+		
+	/**
+	 * @return the labSourcePath
+	 */
+	public JLabel getLabSourcePath() {
+		return labSourcePath;
+	}
 }

@@ -2,10 +2,12 @@ package control;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import entity.AbsolutePath;
 import entity.DBMS_AbsolutePath;
@@ -39,7 +41,24 @@ public class MainGuiCtr {
 		sources = dbAbsolutePath.getAllRootSources();
 		destination = dbAbsolutePath.getRootBackupDir();
 		
+		setTextInLabels();
 		actionListeners();
+	}
+
+	/**
+	 * set the labels int the gui
+	 */
+	private void setTextInLabels() {
+		if(sources != null && sources.get(0) != null){
+			gui.getLabSourcePath().setText(sources.get(0).getPath());
+		}
+		
+		if(destination != null){
+			gui.getLabDestinationPath().setText(destination.getPath());
+		}
+		
+		gui.getLabStart().setText("last backup: 26/09/2015");
+
 	}
 
 	/**
@@ -112,7 +131,39 @@ public class MainGuiCtr {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				new DetailsGui(sources, destination);				
+				String err = new String();
+				
+				if(sources == null || sources.get(0) == null){
+					err += "-Source path not setted\n";
+					
+				}else if(!new File(sources.get(0).getPath()).exists()){
+					err += "-Source path not exists\n";
+					
+				}else if(!new File(sources.get(0).getPath()).isDirectory()){
+					err += "-Source paht is not a directory\n";
+					
+				}
+				
+				if(destination == null){
+					err += "-Destination path not setted\n";
+					
+				}else if(!new File(destination.getPath()).exists()){
+					err += "-Destination path not exists\n";
+					
+				}else if(!new File(destination.getPath()).isDirectory()){
+					err += "-Destination path is not a directory\n";
+					
+				}
+				
+				if(err.equals("")){
+					new DetailsGui(sources, destination);
+					
+				}else{
+					JOptionPane.showMessageDialog(null, "There are some errors:\n"
+							+ err, "warning", JOptionPane.WARNING_MESSAGE);
+					
+				}
+								
 			}
 		});
 		

@@ -29,6 +29,9 @@ public class DetailsGui {
 	private JLabel labFirstStep;
 	private final String phraseFirstStep = "New files: ";
 	
+	private JLabel labFilesNotModify;
+	private final String phraseFilesNotModify = "Not modify files: ";
+	
 	private JLabel labSecondStep;
 	private final String phraseSecondStep = "Modify files: ";
 	
@@ -84,6 +87,11 @@ public class DetailsGui {
 		labFirstStep.setForeground(lBackupMain.CLOUDS);
 		labFirstStep.setFont(lBackupMain.h1);
 		panCenter.add(labFirstStep);
+		
+		labFilesNotModify = new JLabel(phraseFilesNotModify);
+		labFilesNotModify.setForeground(lBackupMain.CLOUDS);
+		labFilesNotModify.setFont(lBackupMain.h1);
+		panCenter.add(labFilesNotModify);
 		
 		labSecondStep = new JLabel(phraseSecondStep);
 		labSecondStep.setForeground(lBackupMain.CLOUDS);
@@ -192,8 +200,13 @@ public class DetailsGui {
 		this.labSecondStep.setText(phraseSecondStep + num);
 	}
 	
+	public void setNumOfNotModifyFiles(int num){
+		this.labFilesNotModify.setText(phraseFilesNotModify + num); 
+	}
+	
 	public void changeColorOfLabels(){
 		this.labFirstStep.setForeground(lBackupMain.SILVER);
+		this.labFilesNotModify.setForeground(lBackupMain.SILVER);
 		this.labSecondStep.setForeground(lBackupMain.SILVER);
 		this.labThirdStep.setForeground(lBackupMain.CLOUDS);
 	}

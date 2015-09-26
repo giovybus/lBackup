@@ -88,6 +88,7 @@ public class AbsolutePath {
 	/**
 	 * @return
 	 * return a clear path for database
+	 * @deprecated
 	 */
 	public String getPathClear() {
 		if(this.path == null)return "";

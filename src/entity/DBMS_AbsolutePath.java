@@ -30,7 +30,7 @@ public class DBMS_AbsolutePath extends DBMS{
 		try {
 			sta = conn.createStatement();
 			sta.execute("INSERT INTO absolute_path (path, type) VALUES ("
-					+ "'" + abs.getPathClear() + "'," 
+					+ "'" + abs.getPath() + "'," 
 					+ abs.getType() 
 					+ ")", Statement.RETURN_GENERATED_KEYS);
 			
@@ -135,7 +135,7 @@ public class DBMS_AbsolutePath extends DBMS{
 		try {
 			sta = conn.createStatement();
 			sta.execute("UPDATE absolute_path SET "
-					+ "path='" + temp.getPathClear() + "' " 
+					+ "path='" + temp.getPath() + "' " 
 					+ "WHERE type=" + AbsolutePath.ROOT_DESTINATION);
 			
 			sta.close();
@@ -156,7 +156,7 @@ public class DBMS_AbsolutePath extends DBMS{
 		try {
 			sta = conn.createStatement();
 			sta.execute("UPDATE absolute_path SET "
-					+ "path='" + temp.getPathClear() + "' " 
+					+ "path='" + temp.getPath() + "' " 
 					+ "WHERE type=" + AbsolutePath.SOURCE);
 			
 			sta.close();

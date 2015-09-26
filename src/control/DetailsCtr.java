@@ -82,54 +82,47 @@ public class DetailsCtr {
 	}
 	
 	private String getTotalSize() {
+		float dimSorgenteKB = (float)dimSorgente/(float)(1024);
+		float dimSorgenteMB = (float)dimSorgente/(float)(1024*1024);
+		float dimSorgenteGB = (float)dimSorgente/(float)(1024*1024*1024);
 		
-		//long dimSorgente = 0;
-		double dimSorgenteMB = dimSorgente/(1024*1024);
-		double dimSorgenteGB = dimSorgenteMB/(1024);
+		float dimBackupKB = (float)dimBackup/(float)(1024);
+		float dimBackupMB = (float)dimBackup/(float)(1024*1024);
+		float dimBackupGB = (float)dimBackup/(float)(1024*1024*1024);
 		
-		//long dimBackupEff = 0;
-		double dimBackupMB = dimBackup/(1024*1024);
-		double dimBackupGB = dimBackupMB/1024;
+		System.out.println("sorgente: " + dimSorgente + ", backup: " + dimBackup);
 		
 		String dimSorgenteStr = "";
-		if(dimSorgenteMB > 0 && dimSorgenteGB > 0){
-			/*dimSorgenteStr = "Dimensione totale cartella sorgente: " 
-					+ decimalFormat.format(dimSorgenteGB) + " GB, " 
-					+ decimalFormat.format(dimSorgenteMB) + " MB, " 
-					+ decimalFormat.format(dimSorgente) + " B";*/
+		if(dimSorgenteGB > 0.9){
 			dimSorgenteStr = decimalFormat.format(dimSorgenteGB) + " GB ";
+			//System.out.println(dimSorgenteGB);
 			
-		}else if(dimSorgenteMB > 0){
-			/*dimSorgenteStr = "Dimensione totale cartella sorgente: " 
-					+ decimalFormat.format(dimSorgenteMB) + " MB, " 
-					+ decimalFormat.format(dimSorgente) + " B";*/
-			dimSorgenteStr = decimalFormat.format(dimSorgenteGB) + " MB ";
+		}else if(dimSorgenteMB > 0.9){
+			dimSorgenteStr = decimalFormat.format(dimSorgenteMB) + " MB ";
+			//System.out.println(dimSorgenteMB);
+			
+		}else if(dimSorgenteKB > 0.9){
+			dimSorgenteStr = decimalFormat.format(dimSorgenteKB) + " KB ";
+			//System.out.println(dimSorgenteKB);
 			
 		}else{
-			/*dimSorgenteStr = "Dimensione totale cartella sorgente: " 
-					+ decimalFormat.format(dimSorgente) + " B";*/
-			dimSorgenteStr = decimalFormat.format(dimSorgenteGB) + " B ";
+			dimSorgenteStr = decimalFormat.format(dimSorgente) + " B ";
+			//System.out.println(dimSorgente);
 		}
 		
 		String dimBackupStr = "";
-		if(dimBackupMB > 0 && dimBackupGB > 0){
-			/*dimBackupStr = "Dimensione totale cartella backup appena copiata: " 
-					+ decimalFormat.format(dimBackupGB) + " GB, " 
-					+ decimalFormat.format(dimBackupMB) + " MB, " 
-					+ decimalFormat.format(dimBackupEff) + " B";*/
+		if(dimBackupGB > 0.9){
 			dimBackupStr = decimalFormat.format(dimBackupGB) + " GB ";
 			
-		}else if(dimBackupMB > 0){
-			/*dimBackupStr = "Dimensione totale cartella backup appena copiata: " 
-					+ decimalFormat.format(dimBackupMB) + " MB, " 
-					+ decimalFormat.format(dimBackupEff) + " B";*/
-			dimBackupStr = decimalFormat.format(dimBackupGB) + " MB ";
+		}else if(dimBackupMB > 0.9){
+			dimBackupStr = decimalFormat.format(dimBackupMB) + " MB ";
+			
+		}else if(dimBackupKB > 0.9){
+			dimBackupStr = decimalFormat.format(dimBackupKB) + " KB ";
 			
 		}else{
-			/*dimBackupStr = "Dimensione totale cartella backup appena copiata: " 
-					+ decimalFormat.format(dimBackupEff) + " B";*/
+			dimBackupStr = decimalFormat.format(dimBackup) + " B ";
 			
-			dimBackupStr = decimalFormat.format(dimBackupGB) + " B ";
 		}
 		
 		return dimBackupStr + "/" + dimSorgenteStr;
@@ -208,29 +201,27 @@ public class DetailsCtr {
 							System.out.println("MODIFICATO) " + rel);
 							nFilesToCopy[I_MODIFY]++;
 							dimBackup += list[j].length();
+							gui.setNumOfModifiedFiles(nFilesToCopy[I_MODIFY]);
 							break;
 							
 						case FilesSource.STATUS_NEW:
 							System.out.println("NUOVO) " + rel);
 							nFilesToCopy[I_NEW]++;
 							dimBackup += list[j].length();
+							gui.setNumOfNewFiles(nFilesToCopy[I_NEW]);
 							break;
 							
 						case FilesSource.STATUS_NOT_MODIFY:
 							System.out.println("NON MODIFICCATO) " + rel);
 							nFilesToCopy[I_NOT_MODIFY]++;
+							gui.setNumOfNotModifyFiles(nFilesToCopy[I_NOT_MODIFY]);
 							break;
 							
 						default:
 							System.out.println("INDEFINITO) " + rel);
 							break;
 						}
-						
-						/**
-						 * print the data in the gui
-						 */
-						gui.setNumOfModifiedFiles(nFilesToCopy[I_MODIFY]);
-						gui.setNumOfNewFiles(nFilesToCopy[I_NEW]);
+									
 					}
 				}
 		}

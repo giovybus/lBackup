@@ -47,6 +47,7 @@ public class Config {
 	public void setSourcePath(String src){
 		prop.setProperty(K_PATH_SOURCE, src);
 		scriviFileINI("aggiornamento");
+		
 	}
 	
 	public String getDestinationPath(){
@@ -91,14 +92,17 @@ public class Config {
 		if(new File(lBackupMain.PATH_CONFIG).exists()){
 			try{
 				prop.load(new FileInputStream(lBackupMain.PATH_CONFIG));
+				
 			}catch(Exception e){
 				e.printStackTrace();
 			}
+			
 		}else{
 			prop.setProperty(K_PATH_SOURCE, "-");
 			prop.setProperty(K_PATH_DESTINATION, "-");
 			prop.setProperty(K_DATA_BACKUP, "-");
 			scriviFileINI("first-launch");
+			
 		}
 	}
 	
@@ -112,6 +116,7 @@ public class Config {
 		try{
 			OutputStream o = new FileOutputStream(new File(lBackupMain.PATH_CONFIG));
 			prop.store(o, commento);
+			
 		}catch(Exception e){
 			e.printStackTrace();
 		}

@@ -46,6 +46,8 @@ public class Files {
 	
 	/**
 	 * @return
+	 * @deprecated
+	 * 
 	 */
 	public String getRelativePathClear() {
 		if(this.relativePath == null) return "";

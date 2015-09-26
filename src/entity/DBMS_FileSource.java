@@ -22,7 +22,7 @@ public class DBMS_FileSource extends DBMS{
 			sta.execute("INSERT INTO files_source (id_absolute_path, "
 					+ "relative_path, md5) VALUES ("
 					+ f.getAbsolutePath().getId() + ","
-					+ "'" + f.getRelativePathClear() + "',"
+					+ "'" + f.getRelativePath() + "',"
 					+ "'" + f.getMd5() + "',"
 					+ ")");
 			
@@ -50,7 +50,7 @@ public class DBMS_FileSource extends DBMS{
 		try {
 			sta = conn.createStatement();
 			res = sta.executeQuery("SELECT * FROM files_source WHERE "
-					+ "relative_path='" + f.getRelativePathClear() + "'");
+					+ "relative_path='" + f.getRelativePath() + "'");
 			
 			if(res.next()){
 				f.setId(res.getInt("id"));
@@ -70,7 +70,7 @@ public class DBMS_FileSource extends DBMS{
 				sta.execute("INSERT INTO files_source (id_absolute_path, "
 						+ "relative_path, md5) VALUES ("
 						+ f.getAbsolutePath().getId() + ","
-						+ "'" + f.getRelativePathClear() + "',"
+						+ "'" + f.getRelativePath() + "',"
 						+ "'" + f.getMd5() + "',"
 						+ ")");
 				
