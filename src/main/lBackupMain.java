@@ -5,22 +5,10 @@ import java.awt.Font;
 import java.awt.Image;
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
-import sun.applet.Main;
-import entity.AbsolutePath;
-import entity.Copy;
-import entity.DBMS;
-import entity.DBMS_AbsolutePath;
-import entity.DBMS_FileSource;
-import entity.FilesSource;
-import entity.Query;
-import boundary.BackupGui;
 import boundary.MainGui;
 
 /**
@@ -66,11 +54,6 @@ public class lBackupMain {
 	
 	public static int PAR_SERVER = SERVER_H2;
 	
-	private static File sorgente;
-	private static File destinazione;
-	
-	private static DBMS_FileSource dbFileSource;
-	
 	public static final Color WET_ASPHALT = new Color(52, 73, 94);
 	public static final Color MIDNIGHT_BLUE = new Color(44, 62, 80);
 	public static final Color ESMERALD = new Color(46, 204, 113);
@@ -80,45 +63,17 @@ public class lBackupMain {
 	
 	/**
 	 * @param args
+	 * 	all parameters are deprecated 
 	 * -nogui il programma parte senza l'interfaccia grafica
 	 * -start il programma parte direttamente a fare il backup
 	 * -server:h2 (come default usa h2)
 	 * -server:mysql
 	 */
 	public static void main(String[] args) {
-		/*System.out.println("parametri: -start parte il programma direttamente a fare il backup senza chiedere conferme\n"
-				+ "-server:h2 imposta il server h2 e usa le query ad-hoc\n"
-				+ "-server:mysql imposta il server mysql e usa le query ad-hoc");*/
 		
-		/*if(args != null){
-			for(String s : args){
-				switch (s) {
-				case "-start":
-					PAR_START = true;
-					System.out.println("paramatro -start SETTATO CORRETTAMENTE");
-					break;
-					
-				case "-server:h2":
-					PAR_SERVER = SERVER_H2;
-					System.out.println("DATABASE settato: H2");
-					break;
-				
-				case "-server:mysql":
-					PAR_SERVER = SERVER_MYSQL;
-					System.out.println("DATABASE settato: MYSQL");
-					break;
-					
-				default:
-					break;
-				}
-			}
-		}
+		if(args.length > 1) System.out.println("all parameters are deprecated.");
 		
-		setLookAndFeel();
-		initImageIcon();
-		boolean contr = true;
-		
-		if(!new File(PATH_HOME_DIR).exists()){
+		/*if(!new File(PATH_HOME_DIR).exists()){
 			new File(PATH_HOME_DIR).mkdir();
 			
 			Query q = new Query();
@@ -133,6 +88,13 @@ public class lBackupMain {
 		
 		setLookAndFeel();
 		initImageIcon();
+		
+		if(!new File(PATH_HOME_DIR).exists()){
+			new File(PATH_HOME_DIR).mkdir();
+			
+			//create the database
+		}
+		
 		new MainGui();
 		
 		/*inserisciRootSorgente();
@@ -169,109 +131,6 @@ public class lBackupMain {
 		}*/
 		
 		
-	}
-	
-	/**
-	 * src - primoPak
-	 *  |		|- prova.java
-	 * 	|		|- altroPak
-	 * 	|				|-settings.java
-	 * 	|
-	 *  |		|- secondoPak
-	 *  |				|-frame.java
-	 *  |				|-gui.java
-	 *  |
-	 *  |
-	 *  |
-	 * 	|- main.java
-	 * 
-	 * 
-	 * @param path
-	 * @param estensione
-	 * @param numDir
-	 */
-	private static void navigaDirectory(List <String> path, String estensione, int numDir, AbsolutePath absolutePath){
-		//for(int i=0; i<path.size(); i++)System.out.println(path.get(i));
-		
-		List <String> temp = new ArrayList<String>();
-		int contaDirectory = 0;
-		String est = estensione;
-		
-		if(numDir == 0) contaDirectory = -1;
-		
-		for(int i=0; i<path.size(); i++){
-			
-			File f = new File(path.get(i));
-				
-				File []list = f.listFiles();
-				
-				for(int j=0; j<list.length; j++){
-					if(list[j].isDirectory()){
-						temp.add(list[j].getAbsolutePath());
-						contaDirectory++;
-						String rel = sorgente.toURI().relativize(list[j].toURI()).getPath();
-						new File(destinazione.getAbsoluteFile() + "\\" + rel).mkdir();
-						
-					}else{
-//						System.out.println("Dimensione del file: " + list[j].length());		
-						String rel = sorgente.toURI().relativize(list[j].toURI()).getPath();
-						System.out.println("\t" + rel);
-						//System.out.println(rel + " ultima mod:" + list[j].lastModified() + " dim:" + list[j].length() + "B"); 
-						
-						//TODO inserire file nel database
-						//query.inserisciFile(idPercorsoAssoluto, rel, Copy.getMd5(list[j]));
-						FilesSource fs = new FilesSource();
-						fs.setAbsolutePath(absolutePath);
-						fs.setLast(false);
-						fs.setMd5(Copy.getMd5(list[j]));
-						fs.setRelativePath(rel);
-						
-						System.out.println(dbFileSource.insert(fs));
-					}
-				}
-		}
-		
-		if(numDir != -1) navigaDirectory(temp, est, contaDirectory, absolutePath);
-	}
-	
-	/**
-	 * @return
-	 */
-	private static AbsolutePath getRootBackup() {
-		DBMS_AbsolutePath dbAbs = new DBMS_AbsolutePath();
-		return dbAbs.getRootBackupDir();
-	}
-
-	/**
-	 * mi da tutte le cartelle memorizzate come root
-	 * di sorgente
-	 * @return
-	 */
-	private static List<AbsolutePath> getAllRootSources() {
-		DBMS_AbsolutePath dbAbs = new DBMS_AbsolutePath();
-		return dbAbs.getAllRootSources();
-	}
-
-	/**
-	 * inserisce una cartella di backup nel database
-	 */
-	private static void inserisciRootBackup(){
-		AbsolutePath abs = new AbsolutePath();
-		abs.setPath("C:\\Users\\giovybus\\Desktop\\rep");
-		abs.setType(1);
-		DBMS_AbsolutePath dbAbs = new DBMS_AbsolutePath();
-		System.out.println(dbAbs.insert(abs));
-	}
-	
-	/**
-	 * inserisce una cartella sorgente nel database
-	 */
-	private static void inserisciRootSorgente() {
-		AbsolutePath abs = new AbsolutePath();
-		abs.setPath("C:\\Users\\giovybus\\Desktop\\bc");
-		abs.setType(0);
-		DBMS_AbsolutePath dbAbs = new DBMS_AbsolutePath();
-		System.out.println(dbAbs.insert(abs));
 	}
 
 	/**

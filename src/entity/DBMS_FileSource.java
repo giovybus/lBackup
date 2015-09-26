@@ -20,11 +20,10 @@ public class DBMS_FileSource extends DBMS{
 		try {
 			sta = conn.createStatement();
 			sta.execute("INSERT INTO files_source (id_absolute_path, "
-					+ "relative_path, md5, last) VALUES ("
+					+ "relative_path, md5) VALUES ("
 					+ f.getAbsolutePath().getId() + ","
 					+ "'" + f.getRelativePathClear() + "',"
 					+ "'" + f.getMd5() + "',"
-					+ f.isLast()
 					+ ")");
 			
 			sta.close();
@@ -44,11 +43,8 @@ public class DBMS_FileSource extends DBMS{
 	 * all'ultimo backup è nuovo o se già c'era
 	 * ma è stato modificato
 	 * @param f
+	 * 
 	 * @return
-	 * 	0: file esistetnte ma modificato<br>
-	 * 	1: file nuovo<br>
-	 * 	2: file uguale<br>
-	 * 	3: errore
 	 */
 	public int newInsert(FilesSource f){
 		try {
@@ -57,56 +53,37 @@ public class DBMS_FileSource extends DBMS{
 					+ "relative_path='" + f.getRelativePathClear() + "'");
 			
 			if(res.next()){
-				f.setId(res.getInt(1));
+				f.setId(res.getInt("id"));
 				
 				if(f.getMd5().equals(res.getString("md5"))){
-					//file uguale 
-					return 2;
+					//file non modificato
+					return FilesSource.STATUS_NOT_MODIFY;
+					
 				}else{
-					//file diverso
+					//file modificato
 					sta.execute("UPDATE files_source SET md5='" + f.getMd5() + "' WHERE id=" + f.getId());
-					return 0;
+					return FilesSource.STATUS_MODIFY;
 				}
 				
 			}else{
 				//file nuovo
 				sta.execute("INSERT INTO files_source (id_absolute_path, "
-						+ "relative_path, md5, last) VALUES ("
+						+ "relative_path, md5) VALUES ("
 						+ f.getAbsolutePath().getId() + ","
 						+ "'" + f.getRelativePathClear() + "',"
 						+ "'" + f.getMd5() + "',"
-						+ f.isLast()
 						+ ")");
 				
-				return 1;
+				return FilesSource.STATUS_NEW;
 			}
 			
 		} catch (Exception e) {
 			e.printStackTrace();
-			return 3;
+			return FilesSource.STATUS_ERROR;
+			
 		}
 	}
 
-	/**
-	 * cancella tutti gli elementi vecchi della tabella 
-	 * files_source
-	 */
-	public boolean removeAllLastTrue() {
-		checkConnessione();
-		try {
-			sta = conn.createStatement();
-			sta.execute("DELETE FROM files_source WHERE last=1");
-			
-			sta.close();
-			conn.close();
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-		
-	}
-	
 	/**
 	 * chiude la connessione, metodo da  usare solo
 	 * qnd chiamo la insert, xk lascio la connessione
@@ -121,22 +98,4 @@ public class DBMS_FileSource extends DBMS{
 		}
 	}
 	
-	/**
-	 * imposta last=1 a tutti i valori della tabella
-	 * @return
-	 */
-	public boolean setAllLastTrue(){
-		checkConnessione();
-		try {
-			sta = conn.createStatement();
-			sta.execute("UPDATE files_source SET last=1 WHERE 1");
-			
-			sta.close();
-			conn.close();
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
 }

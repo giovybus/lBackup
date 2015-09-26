@@ -1,5 +1,6 @@
 package boundary;
 
+import java.awt.BorderLayout;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -24,9 +25,16 @@ public class DetailsGui {
 	private JDialog dlg;
 	
 	private JPanel panCenter;
+	
 	private JLabel labFirstStep;
+	private final String phraseFirstStep = "New files: ";
+	
 	private JLabel labSecondStep;
+	private final String phraseSecondStep = "Modify files: ";
+	
 	private JLabel labThirdStep;
+	private final String phraseThirdStep = "Copy Files: ";
+	
 	private JButton buttAllow;
 	
 	private JPanel panSouth;
@@ -42,6 +50,7 @@ public class DetailsGui {
 		this.sources = sources;
 		this.destination = destination;
 		
+		initPanSouth();
 		initPanelCenter();
 		initDlg();
 		
@@ -55,6 +64,15 @@ public class DetailsGui {
 	/**
 	 * 
 	 */
+	private void initPanSouth() {
+		panSouth = new JPanel();
+		panSouth.setBackground(lBackupMain.WET_ASPHALT);
+	
+	}
+
+	/**
+	 * 
+	 */
 	private void initPanelCenter() {
 		panCenter = new JPanel();
 		panCenter.setBackground(lBackupMain.WET_ASPHALT);
@@ -62,17 +80,17 @@ public class DetailsGui {
 		BoxLayout box = new BoxLayout(panCenter, BoxLayout.PAGE_AXIS);
 		panCenter.setLayout(box);
 		
-		labFirstStep = new JLabel("1. Search new files");
+		labFirstStep = new JLabel(phraseFirstStep);
 		labFirstStep.setForeground(lBackupMain.CLOUDS);
 		labFirstStep.setFont(lBackupMain.h1);
 		panCenter.add(labFirstStep);
 		
-		labSecondStep = new JLabel("2. Search modify files");
-		labSecondStep.setForeground(lBackupMain.SILVER);
+		labSecondStep = new JLabel(phraseSecondStep);
+		labSecondStep.setForeground(lBackupMain.CLOUDS);
 		labSecondStep.setFont(lBackupMain.h1);
 		panCenter.add(labSecondStep);
 		
-		labThirdStep = new JLabel("3. Copy files");
+		labThirdStep = new JLabel(phraseThirdStep);
 		labThirdStep.setForeground(lBackupMain.SILVER);
 		labThirdStep.setFont(lBackupMain.h1);
 		panCenter.add(labThirdStep);
@@ -91,7 +109,8 @@ public class DetailsGui {
 		dlg.setLocationRelativeTo(null);
 		dlg.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
-		dlg.add(panCenter);
+		dlg.add(panCenter, BorderLayout.CENTER);
+		dlg.add(panSouth, BorderLayout.SOUTH);
 		
 	}
 
@@ -165,4 +184,30 @@ public class DetailsGui {
 		return buttAllow;
 	}
 	
+	public void setNumOfNewFiles(int num){
+		this.labFirstStep.setText(phraseFirstStep + num);
+	}
+	
+	public void setNumOfModifiedFiles(int num){
+		this.labSecondStep.setText(phraseSecondStep + num);
+	}
+	
+	public void changeColorOfLabels(){
+		this.labFirstStep.setForeground(lBackupMain.SILVER);
+		this.labSecondStep.setForeground(lBackupMain.SILVER);
+		this.labThirdStep.setForeground(lBackupMain.CLOUDS);
+	}
+	
+	/**
+	 * 
+	 * @param num
+	 * 	number of files to copy
+	 * 
+	 * @param totalSize
+	 * 	string contains the size in this format: 53 MB or 47 GB
+	 */
+	public void setNumOfFilesToCopy(int num, String totalSize){
+		this.labThirdStep.setText(phraseThirdStep 
+				+ num + " [" + totalSize + "]");
+	}
 }

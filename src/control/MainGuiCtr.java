@@ -50,12 +50,12 @@ public class MainGuiCtr {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				gui.getFileChooserSource().setDialogTitle("Seleziona cartella per il database");
+				gui.getFileChooser().setDialogTitle("Seleziona cartella per il database");
 				
-				if(gui.getFileChooserSource().showOpenDialog(gui.getFileChooserSource()) == JFileChooser.APPROVE_OPTION){
+				if(gui.getFileChooser().showOpenDialog(gui.getFileChooser()) == JFileChooser.APPROVE_OPTION){
 					
 					AbsolutePath temp = new AbsolutePath();
-					temp.setPath(gui.getFileChooserSource().getSelectedFile().getAbsolutePath() + "\\");
+					temp.setPath(gui.getFileChooser().getSelectedFile().getAbsolutePath() + "\\");
 					temp.setType(AbsolutePath.SOURCE);
 					
 					if(sources == null){
@@ -65,6 +65,7 @@ public class MainGuiCtr {
 						System.out.println("insert source: " + c);
 						
 					}else{
+						temp.setId(sources.get(0).getId());
 						boolean c = dbAbsolutePath.updateRootSource(temp);
 						System.out.println("update root destination: " + c);
 					}
@@ -80,12 +81,12 @@ public class MainGuiCtr {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				gui.getFileChooserSource().setDialogTitle("Seleziona cartella per il database");
+				gui.getFileChooser().setDialogTitle("Seleziona cartella per il database");
 				
-				if(gui.getFileChooserSource().showOpenDialog(gui.getFileChooserSource()) == JFileChooser.APPROVE_OPTION){
+				if(gui.getFileChooser().showOpenDialog(gui.getFileChooser()) == JFileChooser.APPROVE_OPTION){
 					
 					AbsolutePath temp = new AbsolutePath();
-					temp.setPath(gui.getFileChooserSource().getSelectedFile().getAbsolutePath() + "\\");
+					temp.setPath(gui.getFileChooser().getSelectedFile().getAbsolutePath() + "\\");
 					temp.setType(AbsolutePath.ROOT_DESTINATION);
 					
 					if(destination == null){
@@ -93,6 +94,8 @@ public class MainGuiCtr {
 						System.out.println("insert root destination: " + c);
 						
 					}else{
+						temp.setId(destination.getId());
+						
 						boolean c = dbAbsolutePath.updateRootDestination(temp);
 						System.out.println("update root destination: " + c);
 						

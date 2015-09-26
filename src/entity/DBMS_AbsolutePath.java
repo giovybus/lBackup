@@ -3,6 +3,8 @@ package entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mysql.jdbc.Statement;
+
 /**
  * @author Giovanni Buscarino (giovybus) Copyright (c) 2015 <br>
  * <b>Email:</b> giovanni.buscarino[at]gmail.com<br>
@@ -30,8 +32,14 @@ public class DBMS_AbsolutePath extends DBMS{
 			sta.execute("INSERT INTO absolute_path (path, type) VALUES ("
 					+ "'" + abs.getPathClear() + "'," 
 					+ abs.getType() 
-					+ ")");
+					+ ")", Statement.RETURN_GENERATED_KEYS);
 			
+			res = sta.getGeneratedKeys();
+			if(res.next()){
+				abs.setId(res.getInt(1));
+			}
+			
+			res.close();
 			sta.close();
 			conn.close();
 			return true;

@@ -1,12 +1,10 @@
 package boundary;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Graphics;
 import java.io.File;
 import java.net.URL;
 
@@ -17,9 +15,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTree;
-
-import com.sun.org.apache.bcel.internal.generic.LMUL;
 
 import control.MainGuiCtr;
 import main.lBackupMain;
@@ -47,7 +42,7 @@ public class MainGui {
 	 * filechooser that allow to choose
 	 * the source dir
 	 */
-	private JFileChooser fileChooserSource;
+	private JFileChooser fileChooser;
 	
 	/**
 	 * button for the fileChooserSource
@@ -55,15 +50,19 @@ public class MainGui {
 	private JButton buttSfogliaSource;
 	
 	/**
-	 * filechooser that allow to choose
-	 * the destination dir
+	 * label for the filechooser source
 	 */
-	private JFileChooser fileChooserDestination;
+	private JLabel labSourcePath;
 	
 	/**
 	 * button for the fileChooserDestination
 	 */
 	private JButton buttSfogliaDestination;
+	
+	/**
+	 * label that contains the path of destination
+	 */
+	private JLabel labDestinationPath;
 	
 	/**
 	 * button that start the process for 
@@ -72,12 +71,17 @@ public class MainGui {
 	private JButton buttStart;
 	
 	/**
+	 * jlabel
+	 */
+	private JLabel labStart;
+	
+	/**
 	 * desktop dir
 	 */
 	private File desktop;
 	
 	/**
-	 * default construct
+	 * default construct, init all items, and the principal frame
 	 */
 	public MainGui() {
 		desktop = new File(System.getProperty("user.home") + "\\Desktop");
@@ -97,6 +101,9 @@ public class MainGui {
 		
 		BoxLayout box = new BoxLayout(panCenter, BoxLayout.PAGE_AXIS);
 		panCenter.setLayout(box);
+		
+		fileChooser = new JFileChooser(desktop);
+		fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		
 		initButtFileSource();
 		panCenter.add(getPanelChooseSource());
@@ -118,15 +125,7 @@ public class MainGui {
 		pan.setLayout(box);
 		
 		pan.add(buttStart);
-		
-		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.setSize(new Dimension(140, 80));
-		panel.setBackground(lBackupMain.MIDNIGHT_BLUE);
-		JLabel l = new JLabel("start");
-		l.setForeground(lBackupMain.CLOUDS);
-		panel.add(l);
-		
-		pan.add(panel);
+		pan.add(getPanelRectangle());
 		
 		return pan;
 	}
@@ -142,14 +141,10 @@ public class MainGui {
 		
 		pan.add(buttSfogliaDestination);
 		
-		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.setSize(new Dimension(140, 80));
-		panel.setBackground(lBackupMain.MIDNIGHT_BLUE);
-		JLabel l = new JLabel("Destination Dirctory");
-		l.setForeground(lBackupMain.CLOUDS);
-		panel.add(l);
-		
-		pan.add(panel);
+		JPanel rect = getPanelRectangle();
+		/*initLab
+		rect.add();*/
+		pan.add(rect);
 		
 		return pan;
 	}
@@ -164,15 +159,7 @@ public class MainGui {
 		pan.setLayout(box);
 		
 		pan.add(buttSfogliaSource);
-		
-		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		panel.setSize(new Dimension(140, 80));
-		panel.setBackground(lBackupMain.MIDNIGHT_BLUE);
-		JLabel l = new JLabel("Source Dirctory");
-		l.setForeground(lBackupMain.CLOUDS);
-		panel.add(l);
-		
-		pan.add(panel);
+		pan.add(getPanelRectangle());
 		
 		return pan;
 	}
@@ -210,13 +197,35 @@ public class MainGui {
 		buttSfogliaDestination.setContentAreaFilled(false);
 		buttSfogliaDestination.setFocusPainted(false);
 		
-		fileChooserDestination = new JFileChooser(desktop);
-		fileChooserDestination.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	}
+	
+	/**
+	 * return the panel with image rectangle
+	 * @return
+	 */
+	private JPanel getPanelRectangle(){
+		URL url = MainGui.class.getResource("img/c.png");
 		
+		final ImageIcon img;
+		if(url != null)img = new ImageIcon(url);
+		else img = new ImageIcon();
+		
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEADING, 47, 53)){
+			private static final long serialVersionUID = 1L;
+
+			protected void paintComponent(Graphics g) {
+
+			    super.paintComponent(g);
+			        g.drawImage(img.getImage(), 0, 0, null);
+			}
+		};
+		panel.setBackground(lBackupMain.MIDNIGHT_BLUE);
+		panel.setPreferredSize(new Dimension(500, 100));
+		return panel;
 	}
 
 	/**
-	 * init the button
+	 * init the button for the filechooser
 	 */
 	private void initButtFileSource() {
 		URL url = MainGui.class.getResource("img/source.png");
@@ -231,8 +240,6 @@ public class MainGui {
 		buttSfogliaSource.setContentAreaFilled(false);
 		buttSfogliaSource.setFocusPainted(false);
 		
-		fileChooserSource = new JFileChooser(desktop);
-		fileChooserSource.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 	}
 
 	/**
@@ -241,12 +248,11 @@ public class MainGui {
 	 */
 	private void initFrame() {
 		frm = new JFrame("lBackup (" + lBackupMain.version + ")" );
-		frm.setSize(800, 530);
+		frm.setSize(750, 530);
 		frm.setIconImage(lBackupMain.getLogo());
 		frm.setLocationRelativeTo(null);
 		frm.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		//frm.setBackground(lBackupMain.WET_ASPHALT);
-		//frm.setResizable(false);
+		frm.setResizable(false);
 		
 		frm.add(panCenter, BorderLayout.CENTER);
 		
@@ -256,8 +262,8 @@ public class MainGui {
 	/**
 	 * @return the fileChooserSource
 	 */
-	public JFileChooser getFileChooserSource() {
-		return fileChooserSource;
+	public JFileChooser getFileChooser() {
+		return fileChooser;
 	}
 
 	/**
@@ -265,13 +271,6 @@ public class MainGui {
 	 */
 	public JButton getButtSfogliaSource() {
 		return buttSfogliaSource;
-	}
-
-	/**
-	 * @return the fileChooserDestination
-	 */
-	public JFileChooser getFileChooserDestination() {
-		return fileChooserDestination;
 	}
 
 	/**
