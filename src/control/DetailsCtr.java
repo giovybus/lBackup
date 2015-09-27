@@ -5,9 +5,12 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import main.lBackupMain;
 import entity.AbsolutePath;
 import entity.Copy;
 import entity.DBMS_FileSource;
+import entity.DBMS_FileToBackup;
+import entity.FileToBackup;
 import entity.FilesSource;
 import boundary.DetailsGui;
 
@@ -41,22 +44,44 @@ public class DetailsCtr {
 	private final int I_NOT_MODIFY = 2;
 	
 	/**
+	 * log file
+	 */
+	private LogCtr log;
+	
+	private DBMS_FileToBackup dbFilesToBackup;
+	
+	private Config config;
+	
+	/**
 	 * 
 	 */
 	public DetailsCtr(DetailsGui gui) {
 		this.gui = gui;
 		this.nFilesToCopy = new int[3];
-		decimalFormat = new DecimalFormat("###.##");
+		this.decimalFormat = new DecimalFormat("###.##");
+		this.log = new LogCtr();
+		this.dbFilesToBackup = new DBMS_FileToBackup();
+		this.config = new Config();
 		
 		if(this.gui.getSources() != null){
 			this.source = new File(gui.getSources().get(0).getPath());
 		}
+		
 		this.destination = new File(gui.getDestination().getPath());
 		this.dbFileSource = new DBMS_FileSource();
 		
 		Thread td = new Thread(){
 			public void run(){
+				long start = System.currentTimeMillis();
 				steps();
+				long finish = System.currentTimeMillis();
+				
+				String msgToLog = "Backup completed in: " + (finish-start) + "ms, "
+						+ "file scanned: " + (nFilesToCopy[0] + nFilesToCopy[1] + nFilesToCopy[2]) 
+						+ ", program version: " + lBackupMain.version;
+				
+				log.scriviLog(msgToLog);
+				System.out.println(msgToLog);
 			}
 		};
 		
@@ -79,8 +104,39 @@ public class DetailsCtr {
 		String totalSize = getTotalSize();
 		gui.setNumOfFilesToCopy(tot, totalSize);
 		
+		if(config.isAutomaticBakcup()){
+			copyAllFiles();
+		}
+				
 	}
 	
+	/**
+	 * copy all files 
+	 */
+	private void copyAllFiles() {
+		List<FileToBackup>files = dbFilesToBackup.getAllFilesToBackup();
+		
+		if(files != null){
+			gui.getProgressBar().setMinimum(0);
+			gui.getProgressBar().setMaximum(files.size());
+			
+			for(int i=0; i<files.size(); i++){
+				gui.getProgressBar().setValue(i);
+				gui.setTextToLabFileToCopy(files.get(i).getPathSource());
+				
+				try{
+					Copy.copyFileUsingFileChannels(files.get(i).getFileSource(), 
+							files.get(i).getFileDestination());	
+					dbFilesToBackup.delete(files.get(i));
+					
+				}catch(Exception e){
+					e.printStackTrace();
+					System.err.println(files.get(i).getFileSource().getAbsolutePath());
+				}
+			}	
+		}
+	}
+
 	private String getTotalSize() {
 		float dimSorgenteKB = (float)dimSorgente/(float)(1024);
 		float dimSorgenteMB = (float)dimSorgente/(float)(1024*1024);
@@ -171,9 +227,12 @@ public class DetailsCtr {
 						String rel = source.toURI().relativize(list[j].toURI()).getPath();
 						
 						/**
-						 * create the dir of destination
+						 * create the dir of destination if not exists
 						 */
-						new File(destination.getAbsoluteFile() + "\\" + rel).mkdir();
+						File dir = new File(destination.getAbsoluteFile() + "\\" + rel);
+						if(!dir.exists()){
+							dir.mkdir();
+						}
 						
 					}else{
 //						System.out.println("Dimensione del file: " + list[j].length());		
@@ -202,6 +261,7 @@ public class DetailsCtr {
 							nFilesToCopy[I_MODIFY]++;
 							dimBackup += list[j].length();
 							gui.setNumOfModifiedFiles(nFilesToCopy[I_MODIFY]);
+							newRevisionFileToCopy(rel, fs.getRevision());
 							break;
 							
 						case FilesSource.STATUS_NEW:
@@ -209,10 +269,12 @@ public class DetailsCtr {
 							nFilesToCopy[I_NEW]++;
 							dimBackup += list[j].length();
 							gui.setNumOfNewFiles(nFilesToCopy[I_NEW]);
+							
+							newFileToCopy(rel);
 							break;
 							
 						case FilesSource.STATUS_NOT_MODIFY:
-							System.out.println("NON MODIFICCATO) " + rel);
+							//System.out.println("NON MODIFICCATO) " + rel);
 							nFilesToCopy[I_NOT_MODIFY]++;
 							gui.setNumOfNotModifyFiles(nFilesToCopy[I_NOT_MODIFY]);
 							break;
@@ -227,5 +289,31 @@ public class DetailsCtr {
 		}
 		
 		if(numDir != -1) navigaDirectory(temp, est, contaDirectory, absolutePath);
+	}
+	
+	/**
+	 * @param rel
+	 * @param revision
+	 */
+	private void newRevisionFileToCopy(String rel, int revision) {
+		FileToBackup temp = new FileToBackup();
+		temp.setPathSource(source.getAbsolutePath() + "\\" + rel);
+		temp.setPathDestination(destination.getAbsolutePath() + "\\" + rel + ".rv" + revision);
+		temp.setStatus(0);
+		
+		dbFilesToBackup.insert(temp);
+	}
+
+	/**
+	 * 
+	 * @param rel
+	 */
+	private void newFileToCopy(String rel){
+		FileToBackup temp = new FileToBackup();
+		temp.setPathSource(source.getAbsolutePath() + "\\" + rel);
+		temp.setPathDestination(destination.getAbsolutePath() + "\\" + rel);
+		temp.setStatus(0);
+		
+		dbFilesToBackup.insert(temp);
 	}
 }

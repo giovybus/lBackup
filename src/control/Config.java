@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
@@ -15,11 +16,38 @@ import main.lBackupMain;
  */
 public class Config {
 	
-	private static final String K_PATH_SOURCE = "pth_src";
-	private static final String K_PATH_DESTINATION = "pth_des";
-	private static final String K_DATA_BACKUP = "last_bck";
+	/**
+	 * indica il percorso della cartella sorgente 
+	 */
+	private static final String K_PATH_SOURCE = "path_source";
 	
+	/**
+	 * indica il percorso della cartella di destinazione
+	 */
+	private static final String K_PATH_DESTINATION = "path_destination";
+	
+	/**
+	 * indica la data e l'ora dell'ultimo backup
+	 */
+	private static final String K_DATA_BACKUP = "last_backup";
+	
+	/**
+	 * indica la data e l'ora dell'ultima analisi effettuata
+	 * che solitamente può coincidere con il backup
+	 */
+	private static final String K_DATA_ANALYSIS = "last_analysis";
+	
+	/**
+	 * boolean value
+	 */
+	private static final String K_AUTOMATIC_BACKUP = "automatic_backup";
+	
+	/**
+	 * the properties
+	 */
 	private Properties prop;
+	
+	private SimpleDateFormat dateFormat;
 	
 	/**
 	 * costruttore senza parametri che 
@@ -28,6 +56,7 @@ public class Config {
 	 * automaticamente 
 	 */
 	public Config() {
+		dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		prop = new Properties();
 		leggiFileConfig();
 	}
@@ -70,16 +99,52 @@ public class Config {
 	public String getDataBackup(){
 		String str = prop.getProperty(K_DATA_BACKUP);
 		if(str == null){
-			prop.setProperty(K_DATA_BACKUP, "");
+			prop.setProperty(K_DATA_BACKUP, "-");
 			scriviFileINI("add data backup");
-			return "";
+			return "-";
+			
 		}else{
 			return str;
 		}
 	}
 	
 	public void setDataAttualeBackup(){
-		prop.setProperty(K_DATA_BACKUP, new Date().toString());
+		prop.setProperty(K_DATA_BACKUP, dateFormat.format(new Date()));
+		scriviFileINI("aggiornamento");
+		
+	}
+	
+	public String getDateAnalysis(){
+		String str = prop.getProperty(K_DATA_ANALYSIS);
+		if(str == null){
+			prop.setProperty(K_DATA_ANALYSIS, "-");
+			scriviFileINI("add data backup");
+			return "-";
+			
+		}else{
+			return str;
+		}
+	}
+	
+	public void setDateAnalysis(){
+		prop.setProperty(K_DATA_ANALYSIS, dateFormat.format(new Date()));
+		scriviFileINI("aggiornamento");
+	}
+	
+	public boolean isAutomaticBakcup(){
+		String str = prop.getProperty(K_AUTOMATIC_BACKUP);
+		if(str == null){
+			prop.setProperty(K_AUTOMATIC_BACKUP, "1");
+			scriviFileINI("add automatic backup");
+			return true;
+			
+		}else{
+			return str.equals("1") ? true : false;
+		}
+	}
+	
+	public void setAutomaticBakcup(boolean aut){
+		prop.setProperty(K_AUTOMATIC_BACKUP, aut ? "1" : "0");
 		scriviFileINI("aggiornamento");
 	}
 	
@@ -101,6 +166,8 @@ public class Config {
 			prop.setProperty(K_PATH_SOURCE, "-");
 			prop.setProperty(K_PATH_DESTINATION, "-");
 			prop.setProperty(K_DATA_BACKUP, "-");
+			prop.setProperty(K_DATA_ANALYSIS, "-");
+			prop.setProperty(K_AUTOMATIC_BACKUP, "1");
 			scriviFileINI("first-launch");
 			
 		}

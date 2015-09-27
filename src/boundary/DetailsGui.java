@@ -1,6 +1,8 @@
 package boundary;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridLayout;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -10,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.UIManager;
 
 import control.DetailsCtr;
 import entity.AbsolutePath;
@@ -38,10 +41,14 @@ public class DetailsGui {
 	private JLabel labThirdStep;
 	private final String phraseThirdStep = "Copy Files: ";
 	
+	/**
+	 * allow the backup 
+	 */
 	private JButton buttAllow;
 	
 	private JPanel panSouth;
 	private JProgressBar progressBar;
+	private JLabel labFilesToCopy;
 	
 	private List<AbsolutePath>sources;
 	private AbsolutePath destination;
@@ -68,9 +75,25 @@ public class DetailsGui {
 	 * 
 	 */
 	private void initPanSouth() {
-		panSouth = new JPanel();
+		panSouth = new JPanel(new GridLayout(2, 1));
 		panSouth.setBackground(lBackupMain.WET_ASPHALT);
+		
+		labFilesToCopy = new JLabel();
+		labFilesToCopy.setForeground(lBackupMain.CLOUDS);
+		panSouth.add(labFilesToCopy);
+		
+		initProgressBar();
+		panSouth.add(progressBar);
+		
+	}
 	
+	private void initProgressBar() {
+		progressBar = new JProgressBar();
+		progressBar.setStringPainted(true);
+		
+		UIManager.put("ProgressBar.foreground", Color.blue);
+		UIManager.put("ProgressBar.selectionBackground", Color.gray);
+		UIManager.put("ProgressBar.selectionForeground", Color.black);
 	}
 
 	/**
@@ -81,6 +104,7 @@ public class DetailsGui {
 		panCenter.setBackground(lBackupMain.WET_ASPHALT);
 		
 		BoxLayout box = new BoxLayout(panCenter, BoxLayout.PAGE_AXIS);
+		
 		panCenter.setLayout(box);
 		
 		labFirstStep = new JLabel(phraseFirstStep);
@@ -102,6 +126,9 @@ public class DetailsGui {
 		labThirdStep.setForeground(lBackupMain.SILVER);
 		labThirdStep.setFont(lBackupMain.h1);
 		panCenter.add(labThirdStep);
+		
+		/*buttAllow = new JButton("Copy files");
+		panCenter.add(buttAllow);*/
 		
 	}
 
@@ -222,5 +249,9 @@ public class DetailsGui {
 	public void setNumOfFilesToCopy(int num, String totalSize){
 		this.labThirdStep.setText(phraseThirdStep 
 				+ num + " [" + totalSize + "]");
+	}
+	
+	public void setTextToLabFileToCopy(String text){
+		this.labFilesToCopy.setText(text);
 	}
 }

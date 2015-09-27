@@ -9,6 +9,7 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.UIManager;
 
+import control.Config;
 import boundary.MainGui;
 
 /**
@@ -92,7 +93,7 @@ public class lBackupMain {
 		
 		if(!new File(PATH_HOME_DIR).exists()){
 			new File(PATH_HOME_DIR).mkdir();
-			
+			new Config();
 			//create the database
 		}
 		

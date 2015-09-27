@@ -30,16 +30,18 @@ public class MainGuiCtr {
 	
 	private List<AbsolutePath> sources;
 	private AbsolutePath destination;
+	private Config config;
 	
 	/**
 	 * 
 	 */
 	public MainGuiCtr(MainGui gui) {
 		this.gui = gui;
+		this.config = new Config();
 		
-		dbAbsolutePath = new DBMS_AbsolutePath();
-		sources = dbAbsolutePath.getAllRootSources();
-		destination = dbAbsolutePath.getRootBackupDir();
+		this.dbAbsolutePath = new DBMS_AbsolutePath();
+		this.sources = dbAbsolutePath.getAllRootSources();
+		this.destination = dbAbsolutePath.getRootBackupDir();
 		
 		setTextInLabels();
 		actionListeners();
@@ -57,7 +59,8 @@ public class MainGuiCtr {
 			gui.getLabDestinationPath().setText(destination.getPath());
 		}
 		
-		gui.getLabStart().setText("last backup: 26/09/2015");
+		gui.setTextLastAnalysisBackup(config.getDateAnalysis(), 
+				config.getDataBackup());
 
 	}
 
@@ -156,8 +159,11 @@ public class MainGuiCtr {
 				}
 				
 				if(err.equals("")){
+					config.setDateAnalysis();
 					new DetailsGui(sources, destination);
 					
+					gui.setTextLastAnalysisBackup(config.getDateAnalysis(), 
+							config.getDataBackup());
 				}else{
 					JOptionPane.showMessageDialog(null, "There are some errors:\n"
 							+ err, "warning", JOptionPane.WARNING_MESSAGE);

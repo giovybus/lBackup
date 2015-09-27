@@ -1,5 +1,10 @@
 package entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import control.Config;
+
 /**
  * @author Giovanni Buscarino (giovybus) Copyright (c) 2015 <br>
  * <b>Email:</b> giovanni.buscarino[at]gmail.com<br>
@@ -9,10 +14,32 @@ package entity;
 public class DBMS_FileSource extends DBMS{
 
 	/**
-	 * 
+	 * memorizza tutte le query ke deve fare 
+	 * se voglio effettuare il backup
 	 */
-	public DBMS_FileSource() {
+	private List<String>queryOnWait;
+	
+	/**
+	 * memorizza tutti i files che devo
+	 * copiare nella cartella di destinazione
+	 * se confermo, ovviemante con la lista
+	 * di sopra gli indici corrispondono agli
+	 * stessi file
+	 */
+	private List<FilesSource>filesOnWait;
+	
+	/**
+	 * indica se dopo aver effettuato
+	 * l'analisi faccio il backup direttamente
+	 */
+	private boolean automaticBackup;
+	
+	public DBMS_FileSource(){
+		queryOnWait = new ArrayList<>();
+		filesOnWait = new ArrayList<>();
 		
+		Config config = new Config();
+		automaticBackup = config.isAutomaticBakcup();
 	}
 	
 	public boolean insert(FilesSource f){
@@ -50,7 +77,8 @@ public class DBMS_FileSource extends DBMS{
 		try {
 			sta = conn.createStatement();
 			res = sta.executeQuery("SELECT * FROM files_source WHERE "
-					+ "relative_path='" + f.getRelativePath() + "'");
+					+ "relative_path='" + f.getRelativePath() + "' AND "
+					+ "id_absolute_path=" + f.getAbsolutePath().getId());
 			
 			if(res.next()){
 				f.setId(res.getInt("id"));
@@ -61,18 +89,41 @@ public class DBMS_FileSource extends DBMS{
 					
 				}else{
 					//file modificato
-					sta.execute("UPDATE files_source SET md5='" + f.getMd5() + "' WHERE id=" + f.getId());
+					
+					String query = "UPDATE files_source SET md5='" + f.getMd5() + "', " 
+							+ "revision=revision+1" + " WHERE id=" + f.getId();
+					f.setRevision(res.getInt("revision")+1);
+					
+					if(this.automaticBackup){
+						sta.execute(query);
+						
+					}else{
+						queryOnWait.add(query);
+						filesOnWait.add(f);
+					}
 					return FilesSource.STATUS_MODIFY;
 				}
 				
 			}else{
 				//file nuovo
-				sta.execute("INSERT INTO files_source (id_absolute_path, "
-						+ "relative_path, md5) VALUES ("
-						+ f.getAbsolutePath().getId() + ","
-						+ "'" + f.getRelativePath() + "',"
-						+ "'" + f.getMd5() + "',"
-						+ ")");
+				
+				if(this.automaticBackup){
+					sta.execute("INSERT INTO files_source (id_absolute_path, "
+							+ "relative_path, md5) VALUES ("
+							+ f.getAbsolutePath().getId() + ","
+							+ "'" + f.getRelativePath() + "',"
+							+ "'" + f.getMd5() + "',"
+							+ ")");
+				}else{
+					queryOnWait.add("INSERT INTO files_source (id_absolute_path, "
+							+ "relative_path, md5) VALUES ("
+							+ f.getAbsolutePath().getId() + ","
+							+ "'" + f.getRelativePath() + "',"
+							+ "'" + f.getMd5() + "',"
+							+ ")");
+					
+					filesOnWait.add(f);
+				}
 				
 				return FilesSource.STATUS_NEW;
 			}
@@ -82,6 +133,20 @@ public class DBMS_FileSource extends DBMS{
 			return FilesSource.STATUS_ERROR;
 			
 		}
+	}
+	
+	/**
+	 * @return the filesOnWait
+	 */
+	public List<FilesSource> getFilesOnWait() {
+		return filesOnWait;
+	}
+	
+	/**
+	 * @return the queryOnWait
+	 */
+	public List<String> getQueryOnWait() {
+		return queryOnWait;
 	}
 
 	/**

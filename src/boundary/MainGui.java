@@ -338,6 +338,14 @@ public class MainGui {
 	public JLabel getLabStart() {
 		return labStart;
 	}
+	
+	public void setTextLastAnalysisBackup(String analysis, String backup){
+		this.labStart.setText(
+				"<html>"
+				+ "<p>last analysis: " + analysis + "</p>"
+				+ "<p>last backup: " + backup + "</p>"
+			+ "</html>");
+	}
 		
 	/**
 	 * @return the labSourcePath
