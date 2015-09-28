@@ -1,5 +1,5 @@
 1.2.0-beta
--
+-multithread by pizylon
 
 1.2.0-alpha released on 27/09/2015
 -new UI and engine

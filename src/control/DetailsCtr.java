@@ -120,6 +120,61 @@ public class DetailsCtr {
 		
 		List<File> fList = mm.getList();
 		System.out.println("list size " + fList.size());
+		
+		for(File f : fList){
+			//TODO multi thread
+			String relative = source.toURI().relativize(f.toURI()).getPath();
+			dimSorgente += f.length();
+			
+			FilesSource fs = new FilesSource();
+			
+			//non mi piace, da sistemare
+			fs.setAbsolutePath(gui.getSources().get(0));
+			fs.setMd5(Copy.getMd5(f));
+			fs.setRelativePath(relative);
+			
+			//long in = System.currentTimeMillis();
+			int status = dbFileSource.newInsert(fs);
+			//long fi = System.currentTimeMillis();
+			//System.out.println(fi-in);
+			
+			switch (status) {
+			case FilesSource.STATUS_DELETED:
+				System.out.println("CANCELLATO) " + relative);
+				break;
+
+			case FilesSource.STATUS_ERROR:
+				System.out.println("ERRORE) " + relative);
+				break;
+				
+			case FilesSource.STATUS_MODIFY:
+				System.out.println("MODIFICATO) " + relative);
+				nFilesToCopy[I_MODIFY]++;
+				dimBackup += f.length();
+				gui.setNumOfModifiedFiles(nFilesToCopy[I_MODIFY]);
+				newRevisionFileToCopy(relative, fs.getRevision());
+				break;
+				
+			case FilesSource.STATUS_NEW:
+				System.out.println("NUOVO) " + relative);
+				nFilesToCopy[I_NEW]++;
+				dimBackup += f.length();
+				gui.setNumOfNewFiles(nFilesToCopy[I_NEW]);
+				
+				newFileToCopy(relative);
+				break;
+				
+			case FilesSource.STATUS_NOT_MODIFY:
+				//System.out.println("NON MODIFICCATO) " + rel);
+				nFilesToCopy[I_NOT_MODIFY]++;
+				gui.setNumOfNotModifyFiles(nFilesToCopy[I_NOT_MODIFY]);
+				break;
+				
+			default:
+				System.out.println("INDEFINITO) " + relative);
+				break;
+			}
+		}
 	}
 
 	/**
@@ -269,6 +324,7 @@ public class DetailsCtr {
 						}
 						
 					}else{
+						//TODO analysis
 //						System.out.println("Dimensione del file: " + list[j].length());		
 						String rel = source.toURI().relativize(list[j].toURI()).getPath();
 						//System.out.println(rel + " ultima mod:" + list[j].lastModified() + " dim:" + list[j].length() + "B"); 
