@@ -1,8 +1,11 @@
-1.2.0-alpha
+1.2.0-beta
+-
+
+1.2.0-alpha released on 27/09/2015
 -new UI and engine
 -modifica strutturale database
 
-1.0.0-beta 
+1.0.0-beta not released
 -al click del bottone resetto la barra
 -impostato che quando sto effettuando il backup disabilito il bottone
 -risolto bug degli apici nella fase di inserimento dei path nel database

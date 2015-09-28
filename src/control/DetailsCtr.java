@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import main.lBackupMain;
+import engine.MultiSearchMonitor;
 import entity.AbsolutePath;
 import entity.Copy;
 import entity.DBMS_FileSource;
@@ -53,6 +54,27 @@ public class DetailsCtr {
 	private Config config;
 	
 	/**
+	 * black list with absolute path like:
+	 * C:\Windows\temp
+	 */
+	private List<String>blacklistByPath;
+	
+	/**
+	 * black list that contains only the 
+	 * name of directory.
+	 * 
+	 * .svn | bin | .git | 
+	 */
+	private List<String>blacklistByName;
+	
+	/**
+	 * black list that contains the files
+	 * to exclued like:
+	 * .class | .db | .temp
+	 */
+	private List<String>blacklistByExtension;
+	
+	/**
 	 * 
 	 */
 	public DetailsCtr(DetailsGui gui) {
@@ -73,7 +95,8 @@ public class DetailsCtr {
 		Thread td = new Thread(){
 			public void run(){
 				long start = System.currentTimeMillis();
-				steps();
+				//stepsNoMultiThread();
+				stepsMultiThread();
 				long finish = System.currentTimeMillis();
 				
 				String msgToLog = "Backup completed in: " + (finish-start) + "ms, "
@@ -89,10 +112,21 @@ public class DetailsCtr {
 	}
 
 	/**
+	 * 
+	 */
+	private void stepsMultiThread() {
+		MultiSearchMonitor mm = new MultiSearchMonitor(source.getAbsolutePath());
+		mm.run();
+		
+		List<File> fList = mm.getList();
+		System.out.println("list size " + fList.size());
+	}
+
+	/**
 	 * search new files
 	 * make a decision
 	 */
-	private void steps() {
+	private void stepsNoMultiThread() {
 		
 		List<String>path = new ArrayList<>();
 		path.add(source.getAbsolutePath());
@@ -246,7 +280,11 @@ public class DetailsCtr {
 						fs.setMd5(Copy.getMd5(list[j]));
 						fs.setRelativePath(rel);
 						
+						//long in = System.currentTimeMillis();
 						int status = dbFileSource.newInsert(fs);
+						//long fi = System.currentTimeMillis();
+						//System.out.println(fi-in);
+						
 						switch (status) {
 						case FilesSource.STATUS_DELETED:
 							System.out.println("CANCELLATO) " + rel);

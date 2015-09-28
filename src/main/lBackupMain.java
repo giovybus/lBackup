@@ -39,7 +39,7 @@ public class lBackupMain {
 	/**
 	 * indica la versione del programma
 	 */
-	public static final String version = "1.2.0-alpha";
+	public static final String version = "1.2.0-beta";
 	
 	/**
 	 * se è true questa variabile

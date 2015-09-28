@@ -77,8 +77,7 @@ public class DBMS_FileSource extends DBMS{
 		try {
 			sta = conn.createStatement();
 			res = sta.executeQuery("SELECT * FROM files_source WHERE "
-					+ "relative_path='" + f.getRelativePath() + "' AND "
-					+ "id_absolute_path=" + f.getAbsolutePath().getId());
+					+ "relative_path='" + f.getRelativePath() + "'");
 			
 			if(res.next()){
 				f.setId(res.getInt("id"));
@@ -90,8 +89,8 @@ public class DBMS_FileSource extends DBMS{
 				}else{
 					//file modificato
 					
-					String query = "UPDATE files_source SET md5='" + f.getMd5() + "', " 
-							+ "revision=revision+1" + " WHERE id=" + f.getId();
+					String query = "UPDATE files_source SET md5='" + f.getMd5() + " AND " 
+							+ "revision=revision+1" + "' WHERE id=" + f.getId();
 					f.setRevision(res.getInt("revision")+1);
 					
 					if(this.automaticBackup){
