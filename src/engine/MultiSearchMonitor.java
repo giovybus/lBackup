@@ -16,14 +16,18 @@ public class MultiSearchMonitor extends Thread
 {
 	private String source_path;
 	private List<File> filesFound;
-	public List<Thread> thList;
+	public 	List<Thread> thList;
+	private List<String> blacklistByPath;
+	private List<String>blacklistByName;
+	private List<String>blacklistByExtension;
 	
-	
-	public MultiSearchMonitor(String source_path)
+	public MultiSearchMonitor(String source_path,List<String> blacklistByPath, List<String>blacklistByName,List<String>blacklistByExtension)
 	{
 		this.source_path=source_path;
 		this.thList=new ArrayList<Thread>();
-		
+		this.blacklistByPath=blacklistByPath;
+		this.blacklistByName=blacklistByName;
+		this.blacklistByExtension=blacklistByExtension;	
 	}
 
 	
@@ -53,14 +57,20 @@ public class MultiSearchMonitor extends Thread
 				if(files[i].isDirectory())
 					{
 						
-						MultiThreadSearch temp =new MultiThreadSearch(files[i].getAbsolutePath(), this);
-						temp.start();
+						if(isAllowDirectory(files[i]))
+							{
+								MultiThreadSearch temp =new MultiThreadSearch(files[i].getAbsolutePath(), this);
+								temp.start();
+							}
 						//thList.add(temp);
 						
 						
 					}else{
 						
-						this.filesFound.add(files[i]);
+						if(isAllowExtension(files[i]))
+							{
+								this.filesFound.add(files[i]);
+							}
 					}
 			}
 		
@@ -85,6 +95,71 @@ public class MultiSearchMonitor extends Thread
 		
 	}
 	
+	/**
+	 * @param file
+	 * @return
+	 */
+	public synchronized boolean isAllowExtension(File file)
+	{
+		boolean isAllow=true;
+		if(this.blacklistByExtension!=null)
+			{
+				for(int i=0;i<blacklistByExtension.size();i++)
+					{
+						//System.out.println("name     "+file.getName().substring(file.getName().lastIndexOf(".")));
+						
+						if(file.getName().contains(".")&&file.getName().substring(file.getName().lastIndexOf(".")).equals(blacklistByExtension.get(i)))
+							{
+								//System.out.println("scarto estensione "+file.getName());
+								return false;
+							}
+					}
+			}
+		
+		
+		
+		return isAllow;
+	}
+
+
+	/**
+	 * @param file
+	 * @return
+	 */
+	public synchronized boolean isAllowDirectory(File file)
+	{
+		boolean is=true;
+		String abPath=file.getAbsolutePath();
+		if(this.blacklistByPath!=null)
+			{
+				for(int i=0;i<this.blacklistByPath.size();i++)
+					{
+						if(abPath.contains(this.blacklistByPath.get(i)))
+							{
+								
+								return false;
+							}
+					}
+					
+			}
+			
+			String directoryName=file.getName();
+			if(this.blacklistByName!=null)
+				for(int i=0;i<this.blacklistByName.size();i++)
+					{
+						if(directoryName.equals(this.blacklistByName.get(i)))
+							{
+								//System.out.println("scartoooooooooooooooooooooooooooooooooooooo ");
+								return false;
+							}
+					}
+
+		
+		
+		return is;
+	}
+
+
 	public List<File> getList() {
 		
 		return this.filesFound;

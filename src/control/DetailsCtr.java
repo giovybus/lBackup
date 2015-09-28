@@ -115,7 +115,7 @@ public class DetailsCtr {
 	 * 
 	 */
 	private void stepsMultiThread() {
-		MultiSearchMonitor mm = new MultiSearchMonitor(source.getAbsolutePath());
+		MultiSearchMonitor mm = new MultiSearchMonitor(source.getAbsolutePath(),this.blacklistByPath,this.blacklistByName,this.blacklistByExtension);
 		mm.run();
 		
 		List<File> fList = mm.getList();

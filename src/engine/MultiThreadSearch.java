@@ -53,11 +53,18 @@ public class MultiThreadSearch extends Thread
 							//System.out.println(files[i].getAbsolutePath());
 							if(files[i].isDirectory())
 								{
-										MultiThreadSearch temp=new MultiThreadSearch(files[i].getAbsolutePath(),this.monitor);
-										temp.start();
+									if(monitor.isAllowDirectory(files[i]))
+										{
+											MultiThreadSearch temp=new MultiThreadSearch(files[i].getAbsolutePath(),this.monitor);
+											temp.start();
+										}
 									
 								}else{
-									monitor.addFileList(files[i]);
+									
+									if(monitor.isAllowExtension(files[i]))
+									{
+										monitor.addFileList(files[i]);
+									}
 									
 									//System.out.println(files[i].getAbsolutePath());
 								}
