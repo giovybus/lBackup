@@ -1,0 +1,56 @@
+DROP TABLE IF EXISTS absolute_path ;
+
+CREATE TABLE IF NOT EXISTS absolute_path (
+  id INT NOT NULL AUTO_INCREMENT  ,
+  path  VARCHAR(500) NOT NULL  ,
+  type  INT NULL ,
+   default  TINYINT(2) NULL DEFAULT 1  ,
+  PRIMARY KEY ( id )   )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table   files_source 
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS   files_source  ;
+
+CREATE TABLE IF NOT EXISTS   files_source  (
+   id  INT NOT NULL AUTO_INCREMENT  ,
+   id_absolute_path  INT NOT NULL  ,
+   relative_path  VARCHAR(500) NOT NULL  ,
+   md5  VARCHAR(500) NOT NULL  ,
+   revision  INT(10) NULL DEFAULT 1  ,
+  PRIMARY KEY ( id )   ,
+  INDEX  fk_absolute_path_idx  ( id_absolute_path  ASC)   ,
+  CONSTRAINT  fk_absolute_path_s 
+    FOREIGN KEY ( id_absolute_path )
+    REFERENCES   absolute_path  ( id )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table   file_to_backup 
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS   file_to_backup  ;
+
+CREATE TABLE IF NOT EXISTS   file_to_backup  (
+   id  INT NOT NULL AUTO_INCREMENT  ,
+   absolute_path_source  VARCHAR(500) NULL  ,
+   absolute_path_destination  VARCHAR(500) NULL  ,
+   status  INT NULL DEFAULT 0 ,
+  PRIMARY KEY ( id )   )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table   blacklist 
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS   blacklist  ;
+
+CREATE TABLE IF NOT EXISTS   blacklist  (
+   path  VARCHAR(500) NOT NULL  ,
+   kind  INT(3) NULL DEFAULT 0 ,
+  PRIMARY KEY ( path )   )
+ENGINE = InnoDB;

@@ -14,16 +14,21 @@ import java.util.List;
  */
 public class MultiSearchMonitor extends Thread
 {
-	private String source_path;
+	private File source;
+	private File destination;
 	private List<File> filesFound;
 	public 	List<Thread> thList;
 	private List<String> blacklistByPath;
 	private List<String>blacklistByName;
 	private List<String>blacklistByExtension;
 	
-	public MultiSearchMonitor(String source_path,List<String> blacklistByPath, List<String>blacklistByName,List<String>blacklistByExtension)
+	public MultiSearchMonitor(File source, File destination, 
+			List<String> blacklistByPath, List<String>blacklistByName,
+			List<String>blacklistByExtension)
 	{
-		this.source_path=source_path;
+		this.source=source;
+		this.destination = destination;
+		
 		this.thList=new ArrayList<Thread>();
 		this.blacklistByPath=blacklistByPath;
 		this.blacklistByName=blacklistByName;
@@ -44,7 +49,7 @@ public class MultiSearchMonitor extends Thread
 	{
 		
 		this.filesFound=new ArrayList<File>();
-		File files[]=new File(this.source_path).listFiles();
+		File files[]=this.source.listFiles();
 		
 		if(files.length>0)
 			{
@@ -59,6 +64,8 @@ public class MultiSearchMonitor extends Thread
 						
 						if(isAllowDirectory(files[i]))
 							{
+							
+								createDir(files[i]);
 								MultiThreadSearch temp =new MultiThreadSearch(files[i].getAbsolutePath(), this);
 								temp.start();
 							}
@@ -95,6 +102,23 @@ public class MultiSearchMonitor extends Thread
 		
 	}
 	
+	/**
+	 * 
+	 */
+	synchronized public void createDir(File file) {
+		String rel = source.toURI().relativize(file.toURI()).getPath();
+		
+		/**
+		 * create the dir of destination if not exists
+		 */
+		File dir = new File(destination.getAbsoluteFile() + "\\" + rel);
+		if(!dir.exists()){
+			dir.mkdir();
+		}
+		
+	}
+
+
 	/**
 	 * @param file
 	 * @return
@@ -164,4 +188,5 @@ public class MultiSearchMonitor extends Thread
 		
 		return this.filesFound;
 	}
+
 }

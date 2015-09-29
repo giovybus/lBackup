@@ -89,8 +89,8 @@ public class DBMS_FileSource extends DBMS{
 				}else{
 					//file modificato
 					
-					String query = "UPDATE files_source SET md5='" + f.getMd5() + " AND " 
-							+ "revision=revision+1" + "' WHERE id=" + f.getId();
+					String query = "UPDATE files_source SET md5='" + f.getMd5() + "', " 
+							+ "revision=(revision+1)" + " WHERE id=" + f.getId();
 					f.setRevision(res.getInt("revision")+1);
 					
 					if(this.automaticBackup){

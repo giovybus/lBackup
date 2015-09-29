@@ -14,7 +14,8 @@ import main.lBackupMain;
  * created on 20/set/2015 21:47:57
  */
 public class DBMS {
-	private static final String urlH2 = "jdbc:h2:" + lBackupMain.PATH_HOME_DIR + "db1;AUTO_SERVER=TRUE;Mode=Mysql;";
+	private String DATABASE_NAME="db1";
+	private String urlH2 = "jdbc:h2:" + lBackupMain.PATH_HOME_DIR + DATABASE_NAME + ";AUTO_SERVER=TRUE;Mode=Mysql;";
 	
 	@SuppressWarnings("unused")
 	private static final String urlMySql = "jdbc:mysql://127.0.0.1:3306/db1";
@@ -55,5 +56,9 @@ public class DBMS {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public boolean createDatabase(){
+		return true;
 	}
 }

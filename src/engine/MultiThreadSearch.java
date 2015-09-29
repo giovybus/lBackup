@@ -55,6 +55,8 @@ public class MultiThreadSearch extends Thread
 								{
 									if(monitor.isAllowDirectory(files[i]))
 										{
+											monitor.createDir(files[i]);
+										
 											MultiThreadSearch temp=new MultiThreadSearch(files[i].getAbsolutePath(),this.monitor);
 											temp.start();
 										}

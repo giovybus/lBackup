@@ -39,6 +39,8 @@ public class MainGuiCtr {
 		this.gui = gui;
 		this.config = new Config();
 		
+		//TODO da sistemare, fare in modo  che legga 
+		//qst info dal file ini anzichè dal databse
 		this.dbAbsolutePath = new DBMS_AbsolutePath();
 		this.sources = dbAbsolutePath.getAllRootSources();
 		this.destination = dbAbsolutePath.getRootBackupDir();
@@ -52,11 +54,11 @@ public class MainGuiCtr {
 	 */
 	private void setTextInLabels() {
 		if(sources != null && sources.get(0) != null){
-			gui.getLabSourcePath().setText(sources.get(0).getPath());
+			gui.setTextSource(sources.get(0).getPath());
 		}
 		
 		if(destination != null){
-			gui.getLabDestinationPath().setText(destination.getPath());
+			gui.setTextDestination(destination.getPath());
 		}
 		
 		gui.setTextLastAnalysisBackup(config.getDateAnalysis(), 
@@ -92,8 +94,9 @@ public class MainGuiCtr {
 						System.out.println("update root destination: " + c);
 					}
 					
-					sources.set(0, temp);
-						
+					gui.setTextSource(temp.getPath());
+					config.setSourcePath(temp.getPath());
+					sources.set(0, temp);	
 				}
 				
 			}
@@ -123,7 +126,9 @@ public class MainGuiCtr {
 						
 					}
 					
-					destination = temp;
+					gui.setTextDestination(temp.getPath());
+					config.setDestinazionePath(temp.getPath());
+					destination = temp;					
 					
 				}
 				

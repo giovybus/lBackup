@@ -183,6 +183,7 @@ public class MainGui {
 		pan.setLayout(box);
 		
 		JPanel rect = getPanelRectangle();
+		
 		initLabSourcePath();
 		rect.add(labSourcePath);
 		
@@ -191,7 +192,7 @@ public class MainGui {
 		
 		return pan;
 	}
-
+	
 	/**
 	 * 
 	 */
@@ -248,7 +249,7 @@ public class MainGui {
 		if(url != null)img = new ImageIcon(url);
 		else img = new ImageIcon();
 		
-		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEADING, 47, 53)){
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEADING, 47, 30)){
 			private static final long serialVersionUID = 1L;
 
 			protected void paintComponent(Graphics g) {
@@ -325,32 +326,29 @@ public class MainGui {
 		return buttStart;
 	}
 	
-	/**
-	 * @return the labDestinationPath
-	 */
-	public JLabel getLabDestinationPath() {
-		return labDestinationPath;
-	}
-	
-	/**
-	 * @return the labStart
-	 */
-	public JLabel getLabStart() {
-		return labStart;
-	}
-	
 	public void setTextLastAnalysisBackup(String analysis, String backup){
 		this.labStart.setText(
-				"<html>"
+			"<html>"
 				+ "<p>last analysis: " + analysis + "</p>"
 				+ "<p>last backup: " + backup + "</p>"
 			+ "</html>");
 	}
-		
-	/**
-	 * @return the labSourcePath
-	 */
-	public JLabel getLabSourcePath() {
-		return labSourcePath;
+	
+	public void setTextSource(String source){
+		this.labSourcePath.setText(
+			"<html>"
+				+ "<p><b>Source path:</b></p>"
+				+ "<p>" + source + "</p>"
+				+ "<p><b>Blacklist:</b></p>"
+				+ "<p>1 full path, 2 directory, 3 extensions</p>"
+			+ "</html>");
+	}
+	
+	public void setTextDestination(String destanation){
+		this.labDestinationPath.setText(
+				"<html>"
+					+ "<p><b>Destination path:</b></p>"
+					+ "<p>" + destanation + "</p>"
+				+ "</html>");
 	}
 }

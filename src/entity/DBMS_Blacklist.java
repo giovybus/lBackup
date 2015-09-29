@@ -51,8 +51,8 @@ public class DBMS_Blacklist extends DBMS{
 		return bl;
 	}
 	
-	public List<Blacklist>getAllBlacklistsBy(int kind){
-		List<Blacklist>bl = null;
+	public List<String>getAllBlacklistsBy(int kind){
+		List<String>bl = null;
 		checkConnessione();
 		try{
 			sta = conn.createStatement();
@@ -60,7 +60,7 @@ public class DBMS_Blacklist extends DBMS{
 			
 			while(res.next()){
 				if(bl == null)bl = new ArrayList<>();
-				bl.add(new Blacklist(res.getString("path"), res.getInt("kind")));
+				bl.add(res.getString("path"));
 			}
 			
 			sta.close();

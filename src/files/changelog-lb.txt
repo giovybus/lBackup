@@ -1,4 +1,5 @@
 1.2.0-beta
+-create blacklist for files, directory
 -multithread by pizylon
 
 1.2.0-alpha released on 27/09/2015

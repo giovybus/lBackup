@@ -8,7 +8,9 @@ import java.util.List;
 import main.lBackupMain;
 import engine.MultiSearchMonitor;
 import entity.AbsolutePath;
+import entity.Blacklist;
 import entity.Copy;
+import entity.DBMS_Blacklist;
 import entity.DBMS_FileSource;
 import entity.DBMS_FileToBackup;
 import entity.FileToBackup;
@@ -75,6 +77,13 @@ public class DetailsCtr {
 	private List<String>blacklistByExtension;
 	
 	/**
+	 * variabile che contiene il tempo totale del
+	 * calcolo dell'md5 su tutti i files che sto 
+	 * analizzando
+	 */
+	private long totalTimeMd5;
+	
+	/**
 	 * 
 	 */
 	public DetailsCtr(DetailsGui gui) {
@@ -84,6 +93,8 @@ public class DetailsCtr {
 		this.log = new LogCtr();
 		this.dbFilesToBackup = new DBMS_FileToBackup();
 		this.config = new Config();
+		
+		initBlackList();
 		
 		if(this.gui.getSources() != null){
 			this.source = new File(gui.getSources().get(0).getPath());
@@ -101,7 +112,7 @@ public class DetailsCtr {
 				
 				String msgToLog = "Backup completed in: " + (finish-start) + "ms, "
 						+ "file scanned: " + (nFilesToCopy[0] + nFilesToCopy[1] + nFilesToCopy[2]) 
-						+ ", program version: " + lBackupMain.version;
+						+ ", program version: " + lBackupMain.version + ", total MD5: " + totalTimeMd5 + " ms";
 				
 				log.scriviLog(msgToLog);
 				System.out.println(msgToLog);
@@ -114,8 +125,25 @@ public class DetailsCtr {
 	/**
 	 * 
 	 */
+	private void initBlackList() {
+		DBMS_Blacklist dbBlacklist = new DBMS_Blacklist();
+		
+		this.blacklistByExtension = dbBlacklist.getAllBlacklistsBy(Blacklist.EXTENSION);
+		this.blacklistByName = dbBlacklist.getAllBlacklistsBy(Blacklist.DIRECTORY_NAME);
+		this.blacklistByPath = dbBlacklist.getAllBlacklistsBy(Blacklist.ABSOLUTE_PATH);
+		
+		System.out.println("blacklists: extensions: " + blacklistByExtension.size() 
+				+ ", name: " + blacklistByName.size() 
+				+ ", absolute path: " + blacklistByPath.size());
+		
+	}
+
+	/**
+	 * 
+	 */
 	private void stepsMultiThread() {
-		MultiSearchMonitor mm = new MultiSearchMonitor(source.getAbsolutePath(),this.blacklistByPath,this.blacklistByName,this.blacklistByExtension);
+		MultiSearchMonitor mm = new MultiSearchMonitor(source, destination, this.blacklistByPath,
+				this.blacklistByName, this.blacklistByExtension);
 		mm.run();
 		
 		List<File> fList = mm.getList();
@@ -130,14 +158,17 @@ public class DetailsCtr {
 			
 			//non mi piace, da sistemare
 			fs.setAbsolutePath(gui.getSources().get(0));
-			fs.setMd5(Copy.getMd5(f));
 			fs.setRelativePath(relative);
 			
-			//long in = System.currentTimeMillis();
-			int status = dbFileSource.newInsert(fs);
-			//long fi = System.currentTimeMillis();
+			long in = System.currentTimeMillis();
+			fs.setMd5(Copy.getMd5(f));
+			long fi = System.currentTimeMillis();
+			totalTimeMd5 += (fi-in);
 			//System.out.println(fi-in);
+			fs.setRelativePath(relative);
 			
+			
+			int status = dbFileSource.newInsert(fs);
 			switch (status) {
 			case FilesSource.STATUS_DELETED:
 				System.out.println("CANCELLATO) " + relative);
@@ -175,6 +206,17 @@ public class DetailsCtr {
 				break;
 			}
 		}
+		
+		gui.changeColorOfLabels();
+		
+		int tot = nFilesToCopy[I_NEW] + nFilesToCopy[I_MODIFY];
+		String totalSize = getTotalSize();
+		gui.setNumOfFilesToCopy(tot, totalSize);
+		
+		if(config.isAutomaticBakcup()){
+			copyAllFiles();
+			config.setDataAttualeBackup();
+		}
 	}
 
 	/**
@@ -210,7 +252,7 @@ public class DetailsCtr {
 			gui.getProgressBar().setMaximum(files.size());
 			
 			for(int i=0; i<files.size(); i++){
-				gui.getProgressBar().setValue(i);
+				gui.getProgressBar().setValue(i+1);
 				gui.setTextToLabFileToCopy(files.get(i).getPathSource());
 				
 				try{
