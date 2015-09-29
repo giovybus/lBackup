@@ -1,5 +1,7 @@
 package entity;
-
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -58,7 +60,40 @@ public class DBMS {
 		
 	}
 	
+	/**
+	 * this method cerate the database with all tables
+	 * @return
+	 */
 	public boolean createDatabase(){
-		return true;
+		String query = new String();
+		try{
+			if(new File("database/database").exists()){
+				FileReader file = new FileReader("database/database");
+				BufferedReader buff = new BufferedReader(file);
+				
+					while(buff.ready()){
+//						split(";")[0]
+						query += buff.readLine();
+					}
+				
+				buff.close();
+				System.out.println(query);
+				
+				checkConnessione();
+				
+				sta = conn.createStatement();
+				sta.execute(query);
+				
+				sta.close();
+				conn.close();
+				return true;
+			}else{
+				System.out.println("file not exists.");
+				return false;
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			return false;
+		}
 	}
 }

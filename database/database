@@ -9,9 +9,6 @@ CREATE TABLE IF NOT EXISTS absolute_path (
 ENGINE = InnoDB;
 
 
--- -----------------------------------------------------
--- Table   files_source 
--- -----------------------------------------------------
 DROP TABLE IF EXISTS   files_source  ;
 
 CREATE TABLE IF NOT EXISTS   files_source  (
@@ -30,9 +27,6 @@ CREATE TABLE IF NOT EXISTS   files_source  (
 ENGINE = InnoDB;
 
 
--- -----------------------------------------------------
--- Table   file_to_backup 
--- -----------------------------------------------------
 DROP TABLE IF EXISTS   file_to_backup  ;
 
 CREATE TABLE IF NOT EXISTS   file_to_backup  (
@@ -43,10 +37,6 @@ CREATE TABLE IF NOT EXISTS   file_to_backup  (
   PRIMARY KEY ( id )   )
 ENGINE = InnoDB;
 
-
--- -----------------------------------------------------
--- Table   blacklist 
--- -----------------------------------------------------
 DROP TABLE IF EXISTS   blacklist  ;
 
 CREATE TABLE IF NOT EXISTS   blacklist  (

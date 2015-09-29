@@ -7,9 +7,11 @@ import java.io.File;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 import control.Config;
+import entity.DBMS;
 import boundary.MainGui;
 
 /**
@@ -90,49 +92,27 @@ public class lBackupMain {
 		
 		setLookAndFeel();
 		initImageIcon();
-		
+		boolean cheks = true;
 		if(!new File(PATH_HOME_DIR).exists()){
-			new File(PATH_HOME_DIR).mkdir();
+			if(!new File(PATH_HOME_DIR).mkdir()){
+				cheks = false;
+			}
 			new Config();
+			
 			//create the database
+			DBMS db = new DBMS();
+			if(!db.createDatabase()){
+				cheks = false;
+			}
 		}
 		
-		new MainGui();
-		
-		/*inserisciRootSorgente();
-		inserisciRootBackup();*/
-		
-		/*dbFileSource = new DBMS_FileSource();
-		
-		List<AbsolutePath>allRootSources = getAllRootSources();
-		System.out.println("cartelle root sorgente: " + allRootSources.size());
-		for(AbsolutePath a : allRootSources){
-			System.out.println("\tid: " + a.getId() + ", path: " + a.getPath());
-		}
-		sorgente = new File(allRootSources.get(0).getPath());
-		
-		AbsolutePath rootBackup = getRootBackup();
-		System.out.println("cartella root backup: " + rootBackup.getPath());
-		
-		destinazione = new File(rootBackup.getPath() + "\\" + Long.toString(System.currentTimeMillis()));
-		System.out.println("cartella child backup: " + destinazione.getAbsolutePath());
-		
-		List<String>path = new ArrayList<>();
-		path.add(sorgente.getAbsolutePath());
-		navigaDirectory(path, "", sorgente.list().length, allRootSources.get(0));
-		
-		//controllo file con l'ultimo backup (tabella files_source last = 1)
-		
-		//prendo le decisioni in merito al risultato del controllo
-		
-		
-		/*if(dbFileSource.removeAllLastTrue()){
-			System.out.println(dbFileSource.setAllLastTrue());
+		if(cheks){
+			new MainGui();
 		}else{
-			System.out.println("non sono riuscito a cancellare gli elementi files_source where last=1");
-		}*/
+			JOptionPane.showMessageDialog(null, "An error occurred");
+		}
 		
-		
+				
 	}
 
 	/**

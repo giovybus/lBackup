@@ -43,6 +43,12 @@ public class Config {
 	private static final String K_AUTOMATIC_BACKUP = "automatic_backup";
 	
 	/**
+	 * questo campo indica il profilo selezionato, quindi mi indica il 
+	 * database 
+	 */
+	private static final String K_PROFILE_DATABASE = "database_profile";
+	
+	/**
 	 * the properties
 	 */
 	private Properties prop;
