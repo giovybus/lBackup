@@ -43,7 +43,15 @@ public class MainGuiCtr {
 		//qst info dal file ini anzichè dal databse
 		this.dbAbsolutePath = new DBMS_AbsolutePath();
 		this.sources = dbAbsolutePath.getAllRootSources();
-		this.destination = dbAbsolutePath.getRootBackupDir();
+		
+		if(config.isFtp()){
+			this.destination = new AbsolutePath();
+			this.destination.setPath("lbackup\\");
+			
+		}else{
+			this.destination = dbAbsolutePath.getRootBackupDir();
+		}
+		
 		
 		setTextInLabels();
 		actionListeners();
@@ -74,7 +82,7 @@ public class MainGuiCtr {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				gui.getFileChooser().setDialogTitle("Seleziona cartella per il database");
+				gui.getFileChooser().setDialogTitle("Seleziona cartella sorgente per il backup");
 				
 				if(gui.getFileChooser().showOpenDialog(gui.getFileChooser()) == JFileChooser.APPROVE_OPTION){
 					
@@ -106,13 +114,17 @@ public class MainGuiCtr {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				gui.getFileChooser().setDialogTitle("Seleziona cartella per il database");
+				gui.getFileChooser().setDialogTitle("Seleziona cartella destinazione Backup");
 				
 				if(gui.getFileChooser().showOpenDialog(gui.getFileChooser()) == JFileChooser.APPROVE_OPTION){
 					
 					AbsolutePath temp = new AbsolutePath();
 					temp.setPath(gui.getFileChooser().getSelectedFile().getAbsolutePath() + "\\");
 					temp.setType(AbsolutePath.ROOT_DESTINATION);
+					
+					//controllare se la cartella è vuota, oppure se contiene
+					//dati, e controllare se contiene il database backuppato
+					//per capire se è una cartella già organizzata per il lavoro
 					
 					if(destination == null){
 						boolean c = dbAbsolutePath.insert(temp);
@@ -156,9 +168,10 @@ public class MainGuiCtr {
 					err += "-Destination path not setted\n";
 					
 				}else if(!new File(destination.getPath()).exists()){
-					err += "-Destination path not exists\n";
+					//err += "-Destination path not exists\n";
+					//TODO sistemare qst cosa nel caso in cui sei in FTP
 					
-				}else if(!new File(destination.getPath()).isDirectory()){
+				}else if(!new File(destination.getPath()).isDirectory() ){
 					err += "-Destination path is not a directory\n";
 					
 				}

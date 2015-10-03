@@ -3,6 +3,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 
@@ -78,4 +81,37 @@ public class Copy {
 		}
 	}
 	
+	public static boolean ftp(FileToBackup file){
+		String ftpUrl = "ftp://%s:%s@%s/%s;type=i";
+        String host = "192.168.1.53";
+        String user = "noisett";
+        String pass = "shuttle";
+        String filePath = file.getPathSource();
+        String uploadPath = file.getPathDestination();
+ 
+        ftpUrl = String.format(ftpUrl, user, pass, host, uploadPath);
+        System.out.println("Upload URL: " + ftpUrl);
+ 
+        try {
+            URL url = new URL(ftpUrl);
+            URLConnection conn = url.openConnection();
+            OutputStream outputStream = conn.getOutputStream();
+            
+            FileInputStream inputStream = new FileInputStream(filePath);
+            byte[] buffer = new byte[4096];
+            int bytesRead = -1;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+ 
+            inputStream.close();
+            outputStream.close();
+ 
+            System.out.println("File uploaded");
+            return true;
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+	}
 }

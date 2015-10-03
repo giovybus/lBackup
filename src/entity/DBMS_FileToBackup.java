@@ -72,6 +72,31 @@ public class DBMS_FileToBackup extends DBMS{
 		
 		return files;
 	}
+	
+	/**
+	 * mi da il numero di file che sono in attesa di 
+	 * essere copiati
+	 * @return
+	 */
+	public int getFilesToBackupInWait(){
+		int count=0;
+		checkConnessione();
+		try{
+			sta = conn.createStatement();
+			res = sta.executeQuery("SELECT count(*) AS count FROM file_to_backup WHERE 1");
+			if(res.next()){
+				count = res.getInt("count");
+			}
+			
+			sta.close();
+			res.close();
+			conn.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		return count;
+	}
 
 	/**
 	 * @param fileToBackup
@@ -81,6 +106,24 @@ public class DBMS_FileToBackup extends DBMS{
 		try {
 			sta = conn.createStatement();
 			sta.execute("DELETE FROM file_to_backup WHERE id=" + fb.getId());
+			
+			sta.close();
+			conn.close();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	/**
+	 * cancella tutto il contenuto della tabella 
+	 */
+	public boolean deleteAll() {
+		checkConnessione();
+		try {
+			sta = conn.createStatement();
+			sta.execute("DELETE FROM file_to_backup WHERE 1");
 			
 			sta.close();
 			conn.close();

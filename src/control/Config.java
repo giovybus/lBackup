@@ -43,16 +43,26 @@ public class Config {
 	private static final String K_AUTOMATIC_BACKUP = "automatic_backup";
 	
 	/**
-	 * questo campo indica il profilo selezionato, quindi mi indica il 
-	 * database 
+	 * questo campo indica se il caricamento lo effettuo via ftp
+	 * oppure in un'altra cartella locale al pc
 	 */
-	private static final String K_PROFILE_DATABASE = "database_profile";
+	private static final String K_FTP = "ftp";
+	
+	/**
+	 * indica il nome del database h2
+	 */
+	private static final String K_DATABASE_NAME = "db_name";
 	
 	/**
 	 * the properties
 	 */
 	private Properties prop;
 	
+	/**
+	 * simple date format per impostare 
+	 * il formato della data di ultimo backup / analisi
+	 * in dd/MM/yyyy HH:mm:ss
+	 */
 	private SimpleDateFormat dateFormat;
 	
 	/**
@@ -154,6 +164,23 @@ public class Config {
 		scriviFileINI("aggiornamento");
 	}
 	
+	public boolean isFtp(){
+		String str = prop.getProperty(K_FTP);
+		if(str == null){
+			prop.setProperty(K_FTP, "0");
+			scriviFileINI("add ftp");
+			return true;
+			
+		}else{
+			return str.equals("1") ? true : false;
+		}
+	}
+	
+	public void setFtp(boolean ftp){
+		prop.setProperty(K_FTP, ftp ? "1" : "0");
+		scriviFileINI("aggiornamento");
+	}
+	
 	/**
 	 * legge il file di configurazione
 	 * se esiste altrimenti, lo crea 
@@ -174,6 +201,7 @@ public class Config {
 			prop.setProperty(K_DATA_BACKUP, "-");
 			prop.setProperty(K_DATA_ANALYSIS, "-");
 			prop.setProperty(K_AUTOMATIC_BACKUP, "1");
+			prop.setProperty(K_FTP, "0");
 			scriviFileINI("first-launch");
 			
 		}

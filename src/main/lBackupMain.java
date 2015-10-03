@@ -10,9 +10,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
+import boundary.MainGui;
 import control.Config;
 import entity.DBMS;
-import boundary.MainGui;
 
 /**
  * @author Giovanni Buscarino (giovybus) Copyright (c) 2015 <br>
@@ -52,11 +52,6 @@ public class lBackupMain {
 	 */
 	public static boolean PAR_START = false;  
 	
-	public static final int SERVER_H2 = 0;
-	public static final int SERVER_MYSQL = 1;
-	
-	public static int PAR_SERVER = SERVER_H2;
-	
 	public static final Color WET_ASPHALT = new Color(52, 73, 94);
 	public static final Color MIDNIGHT_BLUE = new Color(44, 62, 80);
 	public static final Color ESMERALD = new Color(46, 204, 113);
@@ -70,33 +65,21 @@ public class lBackupMain {
 	 * 	all parameters are deprecated 
 	 * -nogui il programma parte senza l'interfaccia grafica
 	 * -start il programma parte direttamente a fare il backup
-	 * -server:h2 (come default usa h2)
-	 * -server:mysql
 	 */
 	public static void main(String[] args) {
 		
 		if(args.length > 1) System.out.println("all parameters are deprecated.");
 		
-		/*if(!new File(PATH_HOME_DIR).exists()){
-			new File(PATH_HOME_DIR).mkdir();
-			
-			Query q = new Query();
-			contr = q.creaDatabase();
-		}
-		
-		if(contr){
-			new BackupGui();
-		}else{
-			JOptionPane.showMessageDialog(null, "non posso aprire il programma perchè non riesco a comunicare con il database");
-		}*/
-		
 		setLookAndFeel();
 		initImageIcon();
+		
 		boolean cheks = true;
 		if(!new File(PATH_HOME_DIR).exists()){
 			if(!new File(PATH_HOME_DIR).mkdir()){
 				cheks = false;
 			}
+			
+			//create the file config
 			new Config();
 			
 			//create the database
@@ -108,11 +91,11 @@ public class lBackupMain {
 		
 		if(cheks){
 			new MainGui();
+
 		}else{
 			JOptionPane.showMessageDialog(null, "An error occurred");
-		}
-		
-				
+			
+		}		
 	}
 
 	/**
@@ -126,6 +109,7 @@ public class lBackupMain {
 		else icon = new ImageIcon();
 		
 	}
+	
 	/**
 	 * metodo pubblico che ritorna l'immagine
 	 * da usare nei vari frames

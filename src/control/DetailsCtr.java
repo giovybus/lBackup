@@ -5,6 +5,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import main.lBackupMain;
 import engine.MultiSearchMonitor;
 import entity.AbsolutePath;
@@ -132,9 +134,27 @@ public class DetailsCtr {
 		this.blacklistByName = dbBlacklist.getAllBlacklistsBy(Blacklist.DIRECTORY_NAME);
 		this.blacklistByPath = dbBlacklist.getAllBlacklistsBy(Blacklist.ABSOLUTE_PATH);
 		
-		System.out.println("blacklists: extensions: " + blacklistByExtension.size() 
-				+ ", name: " + blacklistByName.size() 
-				+ ", absolute path: " + blacklistByPath.size());
+		String msg = "Blacklists: ";
+		
+		if(this.blacklistByExtension != null){
+			msg += "extensions: " + blacklistByExtension.size() + "\n"; 
+		}else{
+			msg += "extensions: 0" + "\n";
+		}
+		
+		if(this.blacklistByName != null){
+			msg += "name: " + blacklistByName.size() + "\n"; 
+		}else{
+			msg += "name: 0\n"; 
+		}
+		
+		if(this.blacklistByPath != null){
+			msg += "absolute path: " + blacklistByPath.size() + "\n"; 
+		}else{
+			msg += "absolute path: 0\n";
+		}
+		
+		System.out.println(msg);
 		
 	}
 
@@ -214,15 +234,87 @@ public class DetailsCtr {
 		gui.setNumOfFilesToCopy(tot, totalSize);
 		
 		if(config.isAutomaticBakcup()){
-			copyAllFiles();
+			if(config.isFtp()){
+				copyWithFtp();
+			}else{
+				copyAllFiles();
+			}
+			
+			if(allFilesAreCopied()){
+				dbFileSource.backupH2(destination.getAbsolutePath());
+				
+				JOptionPane.showMessageDialog(null, "All files are copied!!!", 
+						"All done", JOptionPane.INFORMATION_MESSAGE);
+			}else{
+				int choose = JOptionPane.showConfirmDialog(null, 
+						"Error, some files are not copied, do you want to see these files???",
+						"keep calm :)", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+				
+				if(choose == JOptionPane.YES_OPTION){
+					//mostra  i files che non sono stati copiati
+					//e permette di agire direttamente sul probelma
+					
+					dbFileSource.backupH2(destination.getAbsolutePath());
+				}else{
+					dbFilesToBackup.deleteAll();
+					dbFileSource.backupH2(destination.getAbsolutePath());
+				}
+			}
+			
+			
 			config.setDataAttualeBackup();
+			
 		}
+	}
+	
+	/**
+	 * this method check if all files are
+	 * copied, in the backup directory
+	 * @return
+	 */
+	private boolean allFilesAreCopied(){
+		int c = dbFilesToBackup.getFilesToBackupInWait();
+		
+		if(c == 0)return true;
+		else return false;
+	}
+
+	/**
+	 * 
+	 */
+	private void copyWithFtp() {
+		List<FileToBackup>files = dbFilesToBackup.getAllFilesToBackup();
+		
+		if(files != null){
+			gui.getProgressBar().setMinimum(0);
+			gui.getProgressBar().setMaximum(files.size());
+			
+			for(int i=0; i<files.size(); i++){
+				gui.getProgressBar().setValue(i+1);
+				gui.setTextToLabFileToCopy(files.get(i).getPathSource());
+				
+				try{
+					/*Copy.copyFileUsingFileChannels(files.get(i).getFileSource(), 
+							files.get(i).getFileDestination());*/
+					//System.out.println(files.get(i).getFileSource() + " " + files.get(i).getFileDestination());
+					 
+					Copy.ftp(files.get(i));
+					dbFilesToBackup.delete(files.get(i));
+					
+				}catch(Exception e){
+					e.printStackTrace();
+					System.err.println(files.get(i).getFileSource().getAbsolutePath());
+				}
+			}	
+		}
+		
 	}
 
 	/**
 	 * search new files
 	 * make a decision
 	 */
+	@SuppressWarnings("unused")
 	private void stepsNoMultiThread() {
 		
 		List<String>path = new ArrayList<>();

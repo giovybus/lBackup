@@ -5,6 +5,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import control.Config;
+
 /**
  * @author Marco Alaimo Pizylon8 Copiright (C) 2015 <br>
  * <b>Email:</b> alaim.marco@gmail.com<br>
@@ -21,6 +23,7 @@ public class MultiSearchMonitor extends Thread
 	private List<String> blacklistByPath;
 	private List<String>blacklistByName;
 	private List<String>blacklistByExtension;
+	private Config config;
 	
 	public MultiSearchMonitor(File source, File destination, 
 			List<String> blacklistByPath, List<String>blacklistByName,
@@ -33,6 +36,7 @@ public class MultiSearchMonitor extends Thread
 		this.blacklistByPath=blacklistByPath;
 		this.blacklistByName=blacklistByName;
 		this.blacklistByExtension=blacklistByExtension;	
+		this.config = new Config();
 	}
 
 	
@@ -108,14 +112,18 @@ public class MultiSearchMonitor extends Thread
 	synchronized public void createDir(File file) {
 		String rel = source.toURI().relativize(file.toURI()).getPath();
 		
-		/**
-		 * create the dir of destination if not exists
-		 */
-		File dir = new File(destination.getAbsoluteFile() + "\\" + rel);
-		if(!dir.exists()){
-			dir.mkdir();
+		if(config.isFtp()){
+			//si connette via ftp e crea la cartella
+		}else{
+			/**
+			 * create the dir of destination if not exists
+			 */
+			File dir = new File(destination.getAbsoluteFile() + "\\" + rel);
+			if(!dir.exists()){
+				dir.mkdir();
+			}
+			
 		}
-		
 	}
 
 

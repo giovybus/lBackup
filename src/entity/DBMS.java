@@ -16,7 +16,7 @@ import main.lBackupMain;
  * created on 20/set/2015 21:47:57
  */
 public class DBMS {
-	private String DATABASE_NAME="db1";
+	private String DATABASE_NAME="lbackup";
 	private String urlH2 = "jdbc:h2:" + lBackupMain.PATH_HOME_DIR + DATABASE_NAME + ";AUTO_SERVER=TRUE;Mode=Mysql;";
 	
 	@SuppressWarnings("unused")
@@ -94,6 +94,86 @@ public class DBMS {
 		}catch(Exception e){
 			e.printStackTrace();
 			return false;
+		}
+	}
+	
+	/**
+	 * effettua il backup del databse
+	 * nel path passato come parametro
+	 * 
+	 * @param path
+	 * path assoluto di dove devo
+	 * memorizzare il backup
+	 */
+	public void backupH2(String path){
+		
+		try{
+			
+			String[] args =
+			{
+			   "-url",
+			   urlH2,
+			   "-user",
+			   user,
+			   "-password",
+			   psw,
+			   "-script",
+			    path + "\\" + DATABASE_NAME + ".zip"
+			};
+		
+			System.out.println(args[0] + " "
+					+ args[1] + " "
+					+ args[2] + " "
+					+ args[3] + " "
+					+ args[4] + " "
+					+ args[5] + " "
+					+ args[6] + " "
+					+ args[7] + " ");
+			
+			org.h2.tools.Script.main(args);
+			
+			System.out.println("backup of database completed!");
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/**
+	 * ripristina un back effettuato precedentemente
+	 * @param path
+	 * indica il path di dove voglio estrarre il mio 
+	 * backup
+	 * es: ../appdata/lbackup/temp/lbackup.mv.db
+	 */
+	public void restoreH2(String path){
+		
+		try{
+			String[] args =
+				{
+				   "-url",
+				   urlH2,
+				   "-user",
+				   user,
+				   "-password",
+				   psw,
+				   "-script",
+				    (path + DATABASE_NAME)
+				};
+			
+			System.out.println(args[0] + " "
+					+ args[1] + " "
+					+ args[2] + " "
+					+ args[3] + " "
+					+ args[4] + " "
+					+ args[5] + " "
+					+ args[6] + " "
+					+ args[7] + " ");
+			
+			org.h2.tools.RunScript.main(args);
+		
+		}catch(Exception e){
+			e.printStackTrace();
 		}
 	}
 }
