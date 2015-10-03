@@ -44,3 +44,10 @@ CREATE TABLE IF NOT EXISTS   blacklist  (
    kind  INT(3) NULL DEFAULT 0 ,
   PRIMARY KEY ( path )   )
 ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS file_to_be_checked (
+  id INT NOT NULL AUTO_INCREMENT,
+  full_path VARCHAR(500) NOT NULL,
+  md5 VARCHAR(45) NULL,
+  PRIMARY KEY (id))
+ENGINE = InnoDB;
