@@ -72,4 +72,24 @@ public class DBMS_Blacklist extends DBMS{
 		
 		return bl;
 	}
+	
+	/**
+	 * cancella tutti i dati dalla
+	 * tabella blacklist
+	 * @return
+	 */
+	public boolean deleteAll(){
+		checkConnessione();
+		try {
+			sta = conn.createStatement();
+			sta.execute("DELETE FROM blacklist WHERE 1");
+			
+			sta.close();
+			conn.close();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 }

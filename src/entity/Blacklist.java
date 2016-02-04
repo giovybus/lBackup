@@ -7,10 +7,28 @@ package entity;
  * created on 28/set/2015 19:19:45
  */
 public class Blacklist {
+	/**
+	 * viene escluso quel file con il percorso assoluto
+	 * es: C:\\user\\test\\mio.exe
+	 */
 	public static final int ABSOLUTE_PATH = 0;
+	
+	/**
+	 * indica che vengono escluse tutte le cartelle
+	 * che hanno quel nome: .svn
+	 */
 	public static final int DIRECTORY_NAME = 1;
+	
+	/**
+	 * indica che veongono esclusi tutti i file
+	 * di qll determinata estensione: .class
+	 */
 	public static final int EXTENSION = 2;
 	
+	/**
+	 * indica il nome di un file da escludere: Thumbs.db
+	 */
+	public static final int FILE_NAME = 3;
 	private String path;
 	private int kind;
 	

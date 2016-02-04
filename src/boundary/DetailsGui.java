@@ -3,7 +3,6 @@ package boundary;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -50,14 +49,14 @@ public class DetailsGui {
 	private JProgressBar progressBar;
 	private JLabel labFilesToCopy;
 	
-	private List<AbsolutePath>sources;
+	private AbsolutePath source;
 	private AbsolutePath destination;
 	
 	/**
 	 * default constructor
 	 */
-	public DetailsGui(List<AbsolutePath>sources, AbsolutePath destination) {
-		this.sources = sources;
+	public DetailsGui(AbsolutePath source, AbsolutePath destination) {
+		this.source = source;
 		this.destination = destination;
 		
 		initPanSouth();
@@ -166,15 +165,15 @@ public class DetailsGui {
 	/**
 	 * @return the sources
 	 */
-	public List<AbsolutePath> getSources() {
-		return sources;
+	public AbsolutePath getSource() {
+		return source;
 	}
 
 	/**
 	 * @param sources the sources to set
 	 */
-	public void setSources(List<AbsolutePath> sources) {
-		this.sources = sources;
+	public void setSources(AbsolutePath source) {
+		this.source = source;
 	}
 
 	/**

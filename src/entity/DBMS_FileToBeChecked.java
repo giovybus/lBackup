@@ -39,4 +39,24 @@ public class DBMS_FileToBeChecked extends DBMS{
 			return false;
 		}
 	}
+	
+	/**
+	 * cancella tutti i dati dalla
+	 * tabella file_to_be_checked
+	 * @return
+	 */
+	public boolean deleteAll(){
+		checkConnessione();
+		try {
+			sta = conn.createStatement();
+			sta.execute("DELETE FROM file_to_be_checked WHERE 1");
+			
+			sta.close();
+			conn.close();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 }

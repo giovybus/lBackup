@@ -16,6 +16,8 @@ public class MultiThreadSearch extends Thread
 {
 	
 	private String source_folder=null;
+	
+	@SuppressWarnings("unused")
 	private List<File> file_list=null;
 	private MultiSearchMonitor monitor=null;
 	

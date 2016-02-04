@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import control.Config;
 import main.lBackupMain;
 
 /**
@@ -16,8 +17,8 @@ import main.lBackupMain;
  * created on 20/set/2015 21:47:57
  */
 public class DBMS {
-	private String DATABASE_NAME="lbackup";
-	private String urlH2 = "jdbc:h2:" + lBackupMain.PATH_HOME_DIR + DATABASE_NAME + ";AUTO_SERVER=TRUE;Mode=Mysql;";
+	private String DATABASE_NAME;
+	private String urlH2;
 	
 	@SuppressWarnings("unused")
 	private static final String urlMySql = "jdbc:mysql://127.0.0.1:3306/db1";
@@ -26,11 +27,18 @@ public class DBMS {
 	protected Connection conn;
 	protected Statement sta;
 	protected ResultSet res;
+	protected Config config;
 	
 	/**
 	 * constructor
 	 */
 	public DBMS() {
+		config = new Config();
+		this.DATABASE_NAME = config.getDatabaseName();
+		this.urlH2 = "jdbc:h2:" + lBackupMain.PATH_HOME_DIR + DATABASE_NAME 
+				+ ";AUTO_SERVER=TRUE;Mode=Mysql";
+		//IFEXISTS=TRUE non me lo crea se  non lo trova
+		System.out.println(this.urlH2);
 		createConn();
 	}
 	

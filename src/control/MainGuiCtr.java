@@ -3,8 +3,6 @@ package control;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -21,6 +19,7 @@ import boundary.MainGui;
  * created on 22/set/2015 20:56:52
  */
 public class MainGuiCtr {
+	
 	/**
 	 * gui to manage
 	 */
@@ -28,7 +27,7 @@ public class MainGuiCtr {
 	
 	private DBMS_AbsolutePath dbAbsolutePath;
 	
-	private List<AbsolutePath> sources;
+	private AbsolutePath source;
 	private AbsolutePath destination;
 	private Config config;
 	
@@ -42,7 +41,7 @@ public class MainGuiCtr {
 		//TODO da sistemare, fare in modo  che legga 
 		//qst info dal file ini anzichè dal databse
 		this.dbAbsolutePath = new DBMS_AbsolutePath();
-		this.sources = dbAbsolutePath.getAllRootSources();
+		this.source = dbAbsolutePath.getRootSource();
 		
 		if(config.isFtp()){
 			this.destination = new AbsolutePath();
@@ -50,6 +49,7 @@ public class MainGuiCtr {
 			
 		}else{
 			this.destination = dbAbsolutePath.getRootBackupDir();
+			
 		}
 		
 		
@@ -61,8 +61,8 @@ public class MainGuiCtr {
 	 * set the labels int the gui
 	 */
 	private void setTextInLabels() {
-		if(sources != null && sources.get(0) != null){
-			gui.setTextSource(sources.get(0).getPath());
+		if(source != null){
+			gui.setTextSource(source);
 		}
 		
 		if(destination != null){
@@ -90,21 +90,34 @@ public class MainGuiCtr {
 					temp.setPath(gui.getFileChooser().getSelectedFile().getAbsolutePath() + "\\");
 					temp.setType(AbsolutePath.SOURCE);
 					
-					if(sources == null){
+					if(source == null){
+						//il database non è settato, quindi si presuppone
+						//che è il primo utilizzo del programmma
+						dbAbsolutePath.insert(temp);
+						
+					}else{
+						//già il database è settato quindi 
+						
+						
+					}
+					
+					/*if(sources == null){
 						sources = new ArrayList<AbsolutePath>();
 						
 						boolean c = dbAbsolutePath.insert(temp);
 						System.out.println("insert source: " + c);
+						sources.add(temp);
 						
 					}else{
 						temp.setId(sources.get(0).getId());
 						boolean c = dbAbsolutePath.updateRootSource(temp);
 						System.out.println("update root destination: " + c);
-					}
+						sources.set(0, temp);
+					}*/
 					
-					gui.setTextSource(temp.getPath());
+					gui.setTextSource(temp);
 					config.setSourcePath(temp.getPath());
-					sources.set(0, temp);	
+						
 				}
 				
 			}
@@ -153,13 +166,13 @@ public class MainGuiCtr {
 			public void actionPerformed(ActionEvent arg0) {
 				String err = new String();
 				
-				if(sources == null || sources.get(0) == null){
+				if(source == null){
 					err += "-Source path not setted\n";
 					
-				}else if(!new File(sources.get(0).getPath()).exists()){
+				}else if(!new File(source.getPath()).exists()){
 					err += "-Source path not exists\n";
 					
-				}else if(!new File(sources.get(0).getPath()).isDirectory()){
+				}else if(!new File(source.getPath()).isDirectory()){
 					err += "-Source paht is not a directory\n";
 					
 				}
@@ -178,7 +191,7 @@ public class MainGuiCtr {
 				
 				if(err.equals("")){
 					config.setDateAnalysis();
-					new DetailsGui(sources, destination);
+					new DetailsGui(source, destination);
 					
 					gui.setTextLastAnalysisBackup(config.getDateAnalysis(), 
 							config.getDataBackup());

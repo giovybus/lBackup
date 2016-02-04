@@ -162,4 +162,24 @@ public class DBMS_FileSource extends DBMS{
 		}
 	}
 	
+	/**
+	 * cancella tutti i dati dalla
+	 * tabella file_source
+	 * @return
+	 */
+	public boolean deleteAll(){
+		checkConnessione();
+		try {
+			sta = conn.createStatement();
+			sta.execute("DELETE FROM files_source WHERE 1");
+			
+			sta.close();
+			conn.close();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
 }

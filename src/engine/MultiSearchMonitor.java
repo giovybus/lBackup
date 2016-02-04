@@ -23,11 +23,12 @@ public class MultiSearchMonitor extends Thread
 	private List<String> blacklistByPath;
 	private List<String>blacklistByName;
 	private List<String>blacklistByExtension;
+	private List<String>blacklistByFilesName;
 	private Config config;
 	
 	public MultiSearchMonitor(File source, File destination, 
 			List<String> blacklistByPath, List<String>blacklistByName,
-			List<String>blacklistByExtension)
+			List<String>blacklistByExtension, List<String>blacklistByFilesName)
 	{
 		this.source=source;
 		this.destination = destination;
@@ -36,6 +37,8 @@ public class MultiSearchMonitor extends Thread
 		this.blacklistByPath=blacklistByPath;
 		this.blacklistByName=blacklistByName;
 		this.blacklistByExtension=blacklistByExtension;	
+		this.blacklistByFilesName = blacklistByFilesName;
+		
 		this.config = new Config();
 	}
 
@@ -78,7 +81,7 @@ public class MultiSearchMonitor extends Thread
 						
 					}else{
 						
-						if(isAllowExtension(files[i]))
+						if(isAllowExtension(files[i]) && isAllowFilesName(files[i]))
 							{
 								this.filesFound.add(files[i]);
 							}
@@ -106,6 +109,7 @@ public class MultiSearchMonitor extends Thread
 		
 	}
 	
+
 	/**
 	 * 
 	 */
@@ -152,6 +156,25 @@ public class MultiSearchMonitor extends Thread
 		
 		return isAllow;
 	}
+	
+	/**
+	 * @param file
+	 * @return
+	 */
+	private boolean isAllowFilesName(File file) {
+		boolean isAllow=true;
+		if(this.blacklistByFilesName != null){
+			for(int i=0; i<blacklistByFilesName.size(); i++){
+				
+				if(file.getName().equals(blacklistByFilesName.get(i))){
+					return false;
+				}
+			}
+		}
+		
+		return isAllow;
+	}
+
 
 
 	/**

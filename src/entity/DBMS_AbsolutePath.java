@@ -100,6 +100,32 @@ public class DBMS_AbsolutePath extends DBMS{
 		
 		return all;
 	}
+	
+	/**
+	 * @return
+	 */
+	public AbsolutePath getRootSource() {
+		AbsolutePath root = null;
+		
+		checkConnessione();
+		try{
+			sta = conn.createStatement();
+			res = sta.executeQuery("SELECT * FROM absolute_path WHERE type=0 LIMIT 1");
+			
+			if(res.next()){
+				root = new AbsolutePath(res.getInt("id"), 
+						res.getString("path"), res.getInt("type"));
+			}
+			
+			sta.close();
+			res.close();
+			conn.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		return root;
+	}
 
 	/**
 	 * @return
@@ -158,6 +184,26 @@ public class DBMS_AbsolutePath extends DBMS{
 			sta.execute("UPDATE absolute_path SET "
 					+ "path='" + temp.getPath() + "' " 
 					+ "WHERE type=" + AbsolutePath.SOURCE);
+			
+			sta.close();
+			conn.close();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * cancella tutti i dati dalla
+	 * tabella absolute_path
+	 * @return
+	 */
+	public boolean deleteAll(){
+		checkConnessione();
+		try {
+			sta = conn.createStatement();
+			sta.execute("DELETE FROM absolute_path WHERE 1");
 			
 			sta.close();
 			conn.close();

@@ -1,5 +1,7 @@
 package entity;
 
+import java.io.File;
+
 /**
  * @author Giovanni Buscarino (giovybus) Copyright (c) 2015 <br>
  * <b>Email:</b> giovanni.buscarino[at]gmail.com<br>
@@ -95,5 +97,7 @@ public class AbsolutePath {
 		else return this.path.replace("\\", "\\\\");
 	}
 	
-	
+	public boolean isFileExists(){
+		return new File(path).exists();
+	}
 }

@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import control.MainGuiCtr;
+import entity.AbsolutePath;
 import main.lBackupMain;
 
 /**
@@ -334,11 +335,12 @@ public class MainGui {
 			+ "</html>");
 	}
 	
-	public void setTextSource(String source){
+	public void setTextSource(AbsolutePath source){
+		
 		this.labSourcePath.setText(
 			"<html>"
 				+ "<p><b>Source path:</b></p>"
-				+ "<p>" + source + "</p>"
+				+ "<p>" + source.getPath() + "</p>"
 				+ "<p><b>Blacklist:</b></p>"
 				+ "<p>1 full path, 2 directory, 3 extensions</p>"
 			+ "</html>");

@@ -79,6 +79,11 @@ public class DetailsCtr {
 	private List<String>blacklistByExtension;
 	
 	/**
+	 * ex: Thumbs.db
+	 */
+	private List<String>blacklistByFilesName;
+	
+	/**
 	 * variabile che contiene il tempo totale del
 	 * calcolo dell'md5 su tutti i files che sto 
 	 * analizzando
@@ -98,8 +103,8 @@ public class DetailsCtr {
 		
 		initBlackList();
 		
-		if(this.gui.getSources() != null){
-			this.source = new File(gui.getSources().get(0).getPath());
+		if(this.gui.getSource() != null){
+			this.source = new File(gui.getSource().getPath());
 		}
 		
 		this.destination = new File(gui.getDestination().getPath());
@@ -133,6 +138,7 @@ public class DetailsCtr {
 		this.blacklistByExtension = dbBlacklist.getAllBlacklistsBy(Blacklist.EXTENSION);
 		this.blacklistByName = dbBlacklist.getAllBlacklistsBy(Blacklist.DIRECTORY_NAME);
 		this.blacklistByPath = dbBlacklist.getAllBlacklistsBy(Blacklist.ABSOLUTE_PATH);
+		this.blacklistByFilesName = dbBlacklist.getAllBlacklistsBy(Blacklist.FILE_NAME);
 		
 		String msg = "Blacklists: ";
 		
@@ -154,6 +160,12 @@ public class DetailsCtr {
 			msg += "absolute path: 0\n";
 		}
 		
+		if(this.blacklistByFilesName != null){
+			msg += "file name: " + blacklistByFilesName.size() + "\n";
+		}else{
+			msg += "file name: 0\n";
+		}
+		
 		System.out.println(msg);
 		
 	}
@@ -163,7 +175,7 @@ public class DetailsCtr {
 	 */
 	private void stepsMultiThread() {
 		MultiSearchMonitor mm = new MultiSearchMonitor(source, destination, this.blacklistByPath,
-				this.blacklistByName, this.blacklistByExtension);
+				this.blacklistByName, this.blacklistByExtension, this.blacklistByFilesName);
 		mm.run();
 		
 		List<File> fList = mm.getList();
@@ -177,7 +189,7 @@ public class DetailsCtr {
 			FilesSource fs = new FilesSource();
 			
 			//non mi piace, da sistemare
-			fs.setAbsolutePath(gui.getSources().get(0));
+			fs.setAbsolutePath(gui.getSource());
 			fs.setRelativePath(relative);
 			
 			long in = System.currentTimeMillis();
@@ -261,9 +273,7 @@ public class DetailsCtr {
 				}
 			}
 			
-			
-			config.setDataAttualeBackup();
-			
+			config.setDataAttualeBackup();	
 		}
 	}
 	
@@ -319,7 +329,7 @@ public class DetailsCtr {
 		
 		List<String>path = new ArrayList<>();
 		path.add(source.getAbsolutePath());
-		navigaDirectory(path, "", source.list().length, gui.getSources().get(0));
+		navigaDirectory(path, "", source.list().length, gui.getSource());
 		
 		gui.changeColorOfLabels();
 		
@@ -408,6 +418,8 @@ public class DetailsCtr {
 	}
 	
 	/**
+	 * @deprecated
+	 * viene usato qll di marco multithread
 	 * src - primoPak
 	 *  |		|- prova.java
 	 * 	|		|- altroPak

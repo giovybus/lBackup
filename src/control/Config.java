@@ -77,6 +77,23 @@ public class Config {
 		leggiFileConfig();
 	}
 	
+	public String getDatabaseName(){
+		String str = prop.getProperty(K_DATABASE_NAME);
+		if(str == null){
+			prop.setProperty(K_DATABASE_NAME, "demo");
+			scriviFileINI("add database name");
+			return "demo";
+		}else{
+			return str;
+		}
+	}
+	
+	public void setDatabaseName(String name){
+		prop.setProperty(K_DATABASE_NAME, name);
+		scriviFileINI("aggiornamento");
+		
+	}
+	
 	public String getSourcePath(){
 		String str = prop.getProperty(K_PATH_SOURCE);
 		if(str == null){
@@ -201,6 +218,7 @@ public class Config {
 			prop.setProperty(K_DATA_BACKUP, "-");
 			prop.setProperty(K_DATA_ANALYSIS, "-");
 			prop.setProperty(K_AUTOMATIC_BACKUP, "1");
+			prop.setProperty(K_DATABASE_NAME, "demo");
 			prop.setProperty(K_FTP, "0");
 			scriviFileINI("first-launch");
 			

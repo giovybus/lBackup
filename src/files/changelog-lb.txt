@@ -1,4 +1,7 @@
-1.2.0-beta
+1.2.0-beta1 released on 02/02/2016
+-aggiunto blacklist per i file, esempio: Thumbs.db
+
+1.2.0-beta releaased on 21/01/2016
 -create blacklist for files, directory
 -multithread by pizylon
 

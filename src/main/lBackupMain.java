@@ -25,7 +25,8 @@ public class lBackupMain {
 	/**
 	 *indica la cartella ...\AppData\..\LegendaryBackup\ 
 	 */
-	public final static String PATH_HOME_DIR = System.getenv("AppData") + "\\lBackup\\";
+	//public final static String PATH_HOME_DIR = System.getenv("AppData") + "\\lBackup\\Lavori\\";
+	public final static String PATH_HOME_DIR = ".\\dati\\";
 	
 	/**
 	 * indica il percorso assoluto del file config.ini
@@ -41,7 +42,7 @@ public class lBackupMain {
 	/**
 	 * indica la versione del programma
 	 */
-	public static final String version = "1.2.0-beta";
+	public static final String version = "1.2.0-beta1";
 	
 	/**
 	 * se è true questa variabile
@@ -88,7 +89,7 @@ public class lBackupMain {
 				cheks = false;
 			}
 		}
-		
+			
 		if(cheks){
 			new MainGui();
 
